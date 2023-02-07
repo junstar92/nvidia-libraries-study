@@ -91,13 +91,13 @@ int main()
 
 > 아직 살펴보지는 않았지만 하드웨어 계층과 함께 스레드 계층을 살펴보면, 하나의 스레드 블록은 하나의 스트리밍 프로세서 코어 내에서 수행된다. 그림으로 표현하면 아래와 같다.
 > 
-> <img src="https://developer-blogs.nvidia.com/wp-content/uploads/2020/06/kernel-execution-on-gpu-1.png" height=300px width=auto style="display: block; margin: 0 auto"/>
+> <img src="https://developer-blogs.nvidia.com/wp-content/uploads/2020/06/kernel-execution-on-gpu-1.png" height=300px style="display: block; margin: 0 auto"/>
 > <br>
 
 
 그러나, 커널은 동일한 모양의 여러 스레드 블록에서 실행될 수 있기 때문에 커널을 실행하는 스레드의 총 갯수는 블록 당 스레드 수에 블록의 수를 곱한 것과 같다. 블록은 아래 그림과 같이 1차원/2차원/3차원 그리드(grid)로 구성될 수 있다. 여기서 그리드는 스레드 블록들의 집합이며, 각 스레드 블록들은 모두 같은 크기를 가진다.
 
-<img src="https://docs.nvidia.com/cuda/cuda-c-programming-guide/_images/grid-of-thread-blocks.png" height=200px width=auto style="display: block; margin: 0 auto"/>
+<img src="https://docs.nvidia.com/cuda/cuda-c-programming-guide/_images/grid-of-thread-blocks.png" height=200px style="display: block; margin: 0 auto"/>
 
 그리드에서 스레드 블록의 수는 처리할 데이터의 크기에 따라 결정되며, 일반적으로 GPU의 프로세서 갯수를 넘어선다.
 
@@ -144,7 +144,7 @@ int main()
 
 Compute Capability 9.0에서 도입된 기능이며, 필자도 아직 해당 GPU가 없어서 사용해보지는 못했다. 기존의 thread - block - grid의 계층에서 block과 grid 사이에 **thread block clusters** 라는 부가적인 계층 레벨을 도입하는 것이며, 클러스터라는 단위로 협력하기 위한 수단을 제공하는 것으로 보인다. 그림으로 표현하면 다음과 같다.
 
-<img src="https://docs.nvidia.com/cuda/cuda-c-programming-guide/_images/grid-of-clusters.png" height=200px width=auto style="display: block; margin: 0 auto"/>
+<img src="https://docs.nvidia.com/cuda/cuda-c-programming-guide/_images/grid-of-clusters.png" height=200px style="display: block; margin: 0 auto"/>
 
 > 자세한 내용은 추후에 GPU가 생기면 다루어 볼 예정
 
@@ -158,7 +158,7 @@ Compute Capability 9.0에서 도입된 기능이며, 필자도 아직 해당 GPU
 
 아래 그림과 같이 CUDA 스레드는 실행하는 동안 다양한 메모리 공간으로부터 데이터를 액세스할 수 있다.
 
-<img src="https://docs.nvidia.com/cuda/cuda-c-programming-guide/_images/memory-hierarchy.png" height=600px width=auto style="display: block; margin: 0 auto"/>
+<img src="https://docs.nvidia.com/cuda/cuda-c-programming-guide/_images/memory-hierarchy.png" height=600px style="display: block; margin: 0 auto"/>
 
 각 스레드는 private local memory를 가진다다. 각 스레드 블록은 블록 내 모든 스레드들이 접근할 수 있는 공유 메모리(shared memory)를 가지며, 한 블록 내 모든 스레드들에서 공유 메모리의 lifetime은 같다. 그리고 모든 스레드들은 같은 global memory에 액세스할 수 있다.
 
@@ -166,13 +166,13 @@ Compute Capability 9.0에서 도입된 기능이며, 필자도 아직 해당 GPU
 
 그래서 일반적인 경우, 메모리 계층은 아래와 같다고 볼 수 있다.
 
-<img src="https://docs.nvidia.com/cuda/archive/11.7.1/cuda-c-programming-guide/graphics/memory-hierarchy.png" height=500px width=auto style="display: block; margin: 0 auto"/>
+<img src="https://docs.nvidia.com/cuda/archive/11.7.1/cuda-c-programming-guide/graphics/memory-hierarchy.png" height=500px style="display: block; margin: 0 auto"/>
 
 <br>
 
 # Heterogeneous Programming
 
-<img src="https://docs.nvidia.com/cuda/cuda-c-programming-guide/_images/heterogeneous-programming.png" height=600px width=auto style="display: block; margin: 0 auto"/>
+<img src="https://docs.nvidia.com/cuda/cuda-c-programming-guide/_images/heterogeneous-programming.png" height=600px style="display: block; margin: 0 auto"/>
 
 <br>
 

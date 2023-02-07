@@ -17,7 +17,7 @@ GPU는 극도의 병렬 연산에 특화되어 있어서 수 많은 트랜지스
 
 왼쪽: CPU(multicore) / 오른쪽: GPU(manycore)
 
-<img src="https://docs.nvidia.com/cuda/cuda-c-programming-guide/_images/gpu-devotes-more-transistors-to-data-processing.png" height=300px width=auto style="display: block; margin: 0 auto"/>
+<img src="https://docs.nvidia.com/cuda/cuda-c-programming-guide/_images/gpu-devotes-more-transistors-to-data-processing.png" height=300px style="display: block; margin: 0 auto"/>
 
 앞서 언급했듯이 CPU는 순차 코드(sequential code)의 성능을 최적화하도록 설계되어 있고, 명령과 데이터 액세스의 지연 시간(latency)를 줄이기 위해 GPU보다 상대적으로 큰 캐시 메모리를 많이 사용한다. 반면 GPU는 부동소수점 연산과 같은 데이터 처리에 특화된 많은 트랜지스터들을 가지고 있기 때문에 고도의 병렬 연산에 유리하다. 대신 메모리에 액세스하는 지연 시간이 CPU보다 길지만, 연산을 통해 이를 드러나지 않도록 한다.
 
@@ -29,7 +29,7 @@ GPU는 극도의 병렬 연산에 특화되어 있어서 수 많은 트랜지스
 
 2006년 11월, NVIDIA에서 CUDA를 발표했다. 이를 활용하면 NVIDIA GPU를 통해 CPU보다 효율적으로 복잡한 계산 문제들을 해결할 수 있다. CUDA는 C++을 사용하여 개발할 수 있는 환경을 갖추고 있고, 아래 그림에서 보여주는 것처럼 다른 언어, API, 또는 지시어 기반 방식도 지원한다.
 
-<img src="https://docs.nvidia.com/cuda/archive/11.2.0/cuda-c-programming-guide/graphics/gpu-computing-applications.png" height=500px width=auto style="display: block; margin: 0 auto"/>
+<img src="https://docs.nvidia.com/cuda/archive/11.2.0/cuda-c-programming-guide/graphics/gpu-computing-applications.png" height=500px style="display: block; margin: 0 auto"/>
 
 <br> 
 
@@ -48,7 +48,7 @@ CUDA 프로그래밍에 대해 본격적으로 살펴보면 쉽게 이해할 수
 
 문서에서 언급하는 **확장 가능한 프로그래밍 모델(scalable programming model)** 이라는 용어를 간단히 요약하면 어떤 NVIDIA GPU를 사용하더라도 코드를 동일하게 사용할 수 있다는 것을 의미한다. 병렬 연산을 실행할 때, 실제로 CUDA는 스레드 블록들이 알아서 수행되도록 스케쥴링하며, GPU 내의 multiprocessor 갯수에 상관없이 CUDA 프로그램을 실행할 수 있다 (엄밀히 말하자면 각 GPU마다 조건은 존재한다). 이를 그림으로 표현하면 아래와 같다.
 
-<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FeqSDTH%2FbtrmDQvtMn3%2F4wceGUzPsWg6oaV5gjN1ZK%2Fimg.png" height=400px width=auto style="display: block; margin: 0 auto"/>
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FeqSDTH%2FbtrmDQvtMn3%2F4wceGUzPsWg6oaV5gjN1ZK%2Fimg.png" height=400px style="display: block; margin: 0 auto"/>
 
 여기서 컴파일된 CUDA 프로그램 내에는 8개의 스레드 블록을 사용하도록 구성되어 있는데, 서로 다른 수의 SM(streaming multiprocessor)를 갖는 GPU에서 코드 수정없이 실행될 수 있다는 것을 보여준다. 직관적으로 다가오지 않더라도, CUDA 프로그래밍을 알아가다보면 이 부분은 자연스럽게 이해되는 부분이다.
 
