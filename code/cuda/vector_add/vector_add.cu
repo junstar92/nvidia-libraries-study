@@ -1,3 +1,11 @@
+/*****************************************************************************
+ * File:        vector_add.cu
+ * Description: Parallel Vector Addition. A + B = C
+ *              
+ * Compile:     nvcc -o vector_add vector_add.cu
+ * Run:         ./vector_add <n>
+ *                  <n> : the number of vector elements = n power(s) of 2
+ *****************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <cuda_runtime.h>
@@ -34,7 +42,7 @@ void vectorAdd(float const* a, float const* b, float* c, int const num_elements)
 
     // copy the host input vector a and b in host memory
     // to the device input vectors in device memory
-    printf("Copy input data from the host memory to the CUDA device\n");
+    printf("> Copy input data from the host memory to the CUDA device\n");
     CUDA_ERROR_CHECK(cudaMemcpy(d_a, a, sizeof(float) * num_elements, cudaMemcpyHostToDevice));
     CUDA_ERROR_CHECK(cudaMemcpy(d_b, b, sizeof(float) * num_elements, cudaMemcpyHostToDevice));
 
@@ -47,7 +55,7 @@ void vectorAdd(float const* a, float const* b, float* c, int const num_elements)
     // Launch the vectorAddKernel
     int threads_per_block = 256;
     int blocks_per_grid = (num_elements + threads_per_block - 1) / threads_per_block;
-    printf("CUDA kernel launch with %d blocks of %d threads\n", blocks_per_grid, threads_per_block);
+    printf("> CUDA kernel launch with %d blocks of %d threads\n", blocks_per_grid, threads_per_block);
 
     CUDA_ERROR_CHECK(cudaEventRecord(start));
     vectorAddKernel<<<blocks_per_grid, threads_per_block>>>(d_a, d_b, d_c, num_elements);
@@ -55,18 +63,18 @@ void vectorAdd(float const* a, float const* b, float* c, int const num_elements)
 
     // copy the device result vector in device memory
     // to the host result vector in host memory
-    printf("Copy output data from the CUDA device to the host memory\n");
+    printf("> Copy output data from the CUDA device to the host memory\n");
     CUDA_ERROR_CHECK(cudaMemcpy(c, d_c, sizeof(float) * num_elements, cudaMemcpyDeviceToHost));
 
     // verify that the result vector is correct
-    printf("Verifying vector addition...\n");
+    printf("> Verifying vector addition...\n");
     for (int i = 0; i < num_elements; i++) {
-        if (fabs(a[i] + b[i] - c[i]) > 1e-5) {
-            fprintf(stderr, "Result verification failed at element %d\n", i);
+        if (a[i] + b[i] != c[i]) {
+            fprintf(stderr, "Result verification failed at element %d (%f != %f)\n", i, a[i]+b[i], c[i]);
             exit(EXIT_FAILURE);
         }
     }
-    printf("Test PASSED\n");
+    printf("> Test PASSED\n");
 
     // compute performance
     CUDA_ERROR_CHECK(cudaEventElapsedTime(&msec, start, stop));
@@ -90,7 +98,7 @@ int main(int argc, char** argv)
     int pow = strtol(argv[1], NULL, 10);
     int num_elements = 1 << pow;
 
-    printf("[Vector Addition of %d elements\n", num_elements);
+    printf("[Vector addition of %d elements on GPU]\n", num_elements);
 
     // allocate the host input vectors a, b, c
     float *a = (float*)malloc(sizeof(float) * num_elements);
