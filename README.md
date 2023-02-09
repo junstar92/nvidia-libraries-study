@@ -22,5 +22,5 @@ NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브�
 ## CUDA Study
 
 - [Heterogeneous Computing](/cuda-study/01_heterogeneous_computing.md)
-- [CUDA Programming Model](/cuda-study/02_cuda_programming_model.md) (Example: Vanilla Vector Addition)
-
+- [CUDA Programming Model](/cuda-study/02_cuda_programming_model.md) (Example: Vector Addition)
+- [Organizing Parallel Threads](/cuda-study/03_organizing_parallel_threads.md) (Example: Matrix Addition)
