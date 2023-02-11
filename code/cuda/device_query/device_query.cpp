@@ -68,6 +68,7 @@ int main(int argc, char** argv)
         printf("  Warp size:                                        %d\n", dev_prop.warpSize);
         printf("  Maximum number of threads per multiprocessor:     %d\n", dev_prop.maxThreadsPerMultiProcessor);
         printf("  Maximum number of threads per block:              %d\n", dev_prop.maxThreadsPerBlock);
+        printf("  Maximum number of warps per multiprocessors:      %d\n", dev_prop.maxThreadsPerMultiProcessor / dev_prop.warpSize);
         printf("  Max dimension size of a thread block (x,y,z):     (%d, %d, %d)\n", dev_prop.maxThreadsDim[0], dev_prop.maxThreadsDim[1], dev_prop.maxThreadsDim[2]);
         printf("  Max dimension size of a grid size (x,y,z):        (%d, %d, %d)\n", dev_prop.maxGridSize[0], dev_prop.maxGridSize[1], dev_prop.maxGridSize[2]);
         printf("  Maximum memory pitch:                             %lu Bytes\n", dev_prop.memPitch);
