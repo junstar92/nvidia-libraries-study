@@ -27,3 +27,4 @@ NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브�
 - [Device Query](/cuda-study/04_device_query.md)
 - [CUDA Execution Model](/cuda-study/05_cuda_execution_model.md) (GPU Architecture Overview)
 - [Understanding Warp Execution and Warp Divergence](/cuda-study/06_understanding_warp_execution.md)
+- [Avoiding Branch Divergence](cuda-study/07_avoiding_branch_divergence.md) (Example: Sum Reduction)
