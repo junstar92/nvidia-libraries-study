@@ -33,3 +33,4 @@ NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브�
 - [Avoiding Branch Divergence](/cuda-study/07_avoiding_branch_divergence.md) (Example: Sum Reduction)
 - [Unrolling Loops](/cuda-study/08_unrolling_loops.md) (Example: Sum Reduction)
 - [CUDA Memory Model](/cuda-study/09_cuda_memory_model.md) (CUDA Memory Types Overview)
+- [Memory Management](/cuda-study/10_memory_management.md) (Pinned Memory / Zero-copy Memory / UVA / Unified Memory)
