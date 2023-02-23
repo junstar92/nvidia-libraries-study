@@ -219,6 +219,10 @@ CPU에서는 memory load와 store 모두 캐싱될 수 있다. 하지만 GPU에�
 |Constant|Off-chip|Yes|R|All threads + host|Host allocation|
 |Texture|Off-chip|Yes|R|All threads + host|Host allocation|
 
+> **\*** Global memory의 경우, compute capability 6.0, 7.x에서는 기본적으로 L1과 L2에 캐싱된다. 이보다 낮은 compute capability에서는 기본적으로 L2에서만 캐싱되며, 컴파일 플래그를 통해 L1에 캐싱되도록 할 수도 있다.
+
+> **\*** Local memory는 compute capability 5.x 이외의 device에서는 L1과 L2에 캐싱되며, compute capability 5.x device에서는 오직 L2에만 캐싱된다.
+
 <br>
 
 # Static Global Memory
