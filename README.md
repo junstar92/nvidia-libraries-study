@@ -3,6 +3,7 @@ NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브�
 - [References](#references)
 - [CUDA](#cuda)
   - [CUDA Documentations](#cuda-documentations)
+    - [Programming Guide](#programming-guide)
   - [CUDA Study](#cuda-study)
 
 # References
@@ -14,12 +15,14 @@ NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브�
 
 ## CUDA Documentations
 
-- [Programming Guide](/cuda-doc/01_programming_guide/01_intro.md)
-  - [Programming Model](/cuda-doc/01_programming_guide/02_programming_model.md)
-  - Compilation with NVCC
-  - [CUDA Runtime](/cuda-doc/01_programming_guide/03_02_cuda_runtime.md)
-    - [Device Memory](/cuda-doc/01_programming_guide/03_03_device_memory.md)
-    - Device Memory L2 Access Management
+### Programming Guide
+
+- [Programming Guide Intro](/cuda-doc/01_programming_guide/01_intro.md)
+- [Programming Model](/cuda-doc/01_programming_guide/02_programming_model.md)
+- Compilation with NVCC
+- [CUDA Runtime](/cuda-doc/01_programming_guide/03-02_cuda_runtime.md)
+  - [Device Memory](/cuda-doc/01_programming_guide/03-03_device_memory.md)
+  - Device Memory L2 Access Management
 
 
 ## CUDA Study
@@ -34,5 +37,6 @@ NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브�
 - [Unrolling Loops](/cuda-study/08_unrolling_loops.md) (Example: Sum Reduction)
 - [CUDA Memory Model](/cuda-study/09_cuda_memory_model.md) (CUDA Memory Types Overview)
 - [Memory Management](/cuda-study/10_memory_management.md) (Pinned Memory / Zero-copy Memory / UVA / Unified Memory)
+  -  [Example: Matrix Addition with Unified Memory](/cuda-study/10-1_matrix_addition_with_unified_memory.md)
 - [Global Memory Access Patterns](/cuda-study/11_memory_access_patterns.md)
   - [Example: Matrix Transpose](/cuda-study/11-1_matrix_transpose_problem.md)
