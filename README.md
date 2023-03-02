@@ -41,3 +41,4 @@ NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브�
 - [Global Memory Access Patterns](/cuda-study/11_memory_access_patterns.md)
   - [Example: Matrix Transpose](/cuda-study/11-1_matrix_transpose_problem.md)
 - [Introducing CUDA Shared Memory](/cuda-study/12_shared_memory.md) (Shared Memory Bank / Synchronization / Volatile Qualifier)
+  - [Layout of Shared Memory](/cuda-study/12-1_data_layout_of_shared_memory.md) (Square & Rectangular Shared Memory)
