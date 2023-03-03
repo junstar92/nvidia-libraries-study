@@ -12,7 +12,7 @@
 
 # Intro
 
-일반적으로 스레드 인덱싱은 control flow에 영향을 준다. [Understanding Warp Execution](/cuda-study/06_understanding_warp_execution.md)에서 살펴봤듯이 warp 내에서의 conditional execution은 warp divergence를 발생시켜 커널의 성능 저하를 일으키게 된다. 이런 경우, data access pattern을 재정렬하여 warp divergence를 줄이거나 아예 없앨 수 있다. 이번 포스팅에서는 parallel reduction 문제를 통해 branch divergence를 어떻게 해결할 수 있는지 알아본다.
+일반적으로 스레드 인덱싱은 control flow에 영향을 준다. [Understanding Warp Execution](/cuda/study/06_understanding_warp_execution.md)에서 살펴봤듯이 warp 내에서의 conditional execution은 warp divergence를 발생시켜 커널의 성능 저하를 일으키게 된다. 이런 경우, data access pattern을 재정렬하여 warp divergence를 줄이거나 아예 없앨 수 있다. 이번 포스팅에서는 parallel reduction 문제를 통해 branch divergence를 어떻게 해결할 수 있는지 알아본다.
 
 # The Parallel Reduction Problem
 
@@ -72,7 +72,7 @@ int recursiveReduce(int* data, int const size)
 
 # Divergence in Parallel Reduction
 
-> 전체 코드는 [reduce_integer.cu](/code/cuda/reduce_integer/reduce_integer.cu)를 참조
+> 전체 코드는 [reduce_integer.cu](/cuda/code/reduce_integer/reduce_integer.cu)를 참조
 
 다양한 방법의 parallel reduction 구현을 살펴볼텐데, 먼저 아래 그림과 같은 neighbored pair 방법을 살펴보자. 여기서 각 스레드들은 바로 인접한 두 요소를 더해 하나의 부분합을 계산한다.
 
@@ -112,7 +112,7 @@ void reduceNeighbored(int* g_in, int* g_out, unsigned int const n)
 
 <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FehlJcp%2FbtrYXkr43A3%2FmuRzLRaRKPe5gnnBUekhUk%2Fimg.png" width=700px style="display: block; margin: 0 auto"/>
 
-이렇게 작성한 코드([reduce_integer.cu](/code/cuda/reduce_integer/reduce_integer.cu))를 가지고 컴파일 후, 실행해보면 아래와 같은 출력을 얻을 수 있다. 입력의 크기는 16M(16,777,216 elements)이고, 사용된 스레드 블록(1D)의 크기는 512로 설정했다.
+이렇게 작성한 코드([reduce_integer.cu](/cuda/code/reduce_integer/reduce_integer.cu))를 가지고 컴파일 후, 실행해보면 아래와 같은 출력을 얻을 수 있다. 입력의 크기는 16M(16,777,216 elements)이고, 사용된 스레드 블록(1D)의 크기는 512로 설정했다.
 
 ```
 > Starting reduction at device 0: NVIDIA GeForce RTX 3080
@@ -134,7 +134,7 @@ gpu Neighbored      elapsed 0.5575 ms     gpu sum: 2139353471 <<<grid 32768 bloc
 if ((tid % (2 * stride)) == 0)
 ```
 
-짝수 번째 ID를 갖는 스레드만 `true`가 되기 때문에 **warp divergence** 를 발생시킨다는 것을 알 수 있다 ([Understanding warp execution](/cuda-study/06_understanding_warp_execution.md) 참조).
+짝수 번째 ID를 갖는 스레드만 `true`가 되기 때문에 **warp divergence** 를 발생시킨다는 것을 알 수 있다 ([Understanding warp execution](/cuda/study/06_understanding_warp_execution.md) 참조).
 
 이 커널의 첫 번째 반복에서 모든 스레드들이 스케쥴링되지만, 오직 짝수 번째의 스레드만(전체의 1/2) 조건문의 body를 수행하게 된다. 두 번째 반복에서도 여전히 모든 스레드들이 스케쥴링되지만, 전체 스레드들 중 1/4만 활성화된다. 결과적으로 warp divergence를 발생시키게 된다.
 

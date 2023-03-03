@@ -16,7 +16,7 @@
 
 # Introducing the CUDA Programming Model
 
-> 기본적인 CUDA Programming Model에 대한 내용은 [Programming Model](/cuda-doc/01_programming_guide/02_programming_model.md)을 참조 바람
+> 기본적인 CUDA Programming Model에 대한 내용은 [Programming Model](/cuda/doc/01_programming_guide/02_programming_model.md)을 참조 바람
 
 CUDA 프로그래밍 모델에서 GPU 아키텍처의 computing power를 활용하기 위해 가장 중요한 두 가지는 다음과 같다.
 
@@ -85,7 +85,7 @@ Host <-> Device 간 데이터 전달 함수는 `cudaMemcpy` 이며, 이 함수�
 
 `char* cudaGetErrorString(cudaError_t error)`
 
-[vector_add.cu](/code/cuda/vector_add/vector_add.cu) 예제 코드를 살펴보면, `cudaMalloc`과 `cudaMemcpy`를 어떻게 사용하는지 잘 보여준다. 아래는 예제 코드에서 실제 덧셈을 수행하는 `vectorAdd` 함수 구현이다. 
+[vector_add.cu](/cuda/code/vector_add/vector_add.cu) 예제 코드를 살펴보면, `cudaMalloc`과 `cudaMemcpy`를 어떻게 사용하는지 잘 보여준다. 아래는 예제 코드에서 실제 덧셈을 수행하는 `vectorAdd` 함수 구현이다. 
 
 ```c++
 void vectorAdd(float const* a, float const* b, float* c, int const num_elements)
@@ -369,8 +369,8 @@ CUDA_ERROR_CHECK(cudaDeviceSynchronize());
 # Example: Vector Addition
 
 > 예제에 사용된 전체 코드는 아래 링크 참조
-> - Sequential Vector Addition: [vector_add_on_host.cpp](/code/cuda/vector_add/vector_add_on_host.cpp)
-> - Parallel Vector Addition: [vector_add.cu](/code/cuda/vector_add/vector_add.cu) 
+> - Sequential Vector Addition: [vector_add_on_host.cpp](/cuda/code/vector_add/vector_add_on_host.cpp)
+> - Parallel Vector Addition: [vector_add.cu](/cuda/code/vector_add/vector_add.cu) 
 
 벡터 덧셈 예시를 가지고, sequential code와 CUDA로 구현한 parallel code를 살펴보자.
 

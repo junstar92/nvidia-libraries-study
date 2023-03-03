@@ -55,7 +55,7 @@ int main()
 
 위 코드는 N개의 스레드가 vectorAddKernel 함수를 실행하고, 각 스레드는 한 쌍의 덧셈을 수행한다.
 
-> `vectorAddKernel` 예제에 대한 전체 코드는 [vector_add.cu](/code/cuda/vector_add/vector_add.cu) 를 참조 바람.
+> `vectorAddKernel` 예제에 대한 전체 코드는 [vector_add.cu](/cuda/code/vector_add/vector_add.cu) 를 참조 바람.
 
 <br>
 

@@ -12,7 +12,7 @@
 
 # Intro
 
-[CUDA Programming Model](/cuda-study/02_cuda_programming_model.md)에서 벡터 덧셈 예제를 통해 그리드와 블록 사이즈를 사용하여 스레드를 어떻게 조직화하는지 살펴볼 수 있다. 스레드를 어떻게 조직화하느냐에 따라 커널의 성능에 큰 영향을 미칠 수 있는데, 이전의 벡터 덧셈 예제([vector_add.cu](/code/cuda/vector_add/vector_add.cu)에서 블록의 크기를 조절하여 최적의 성능을 찾을 수 있다. 그리드의 크기는 사실 데이터의 수와 블록 크기를 통해 계산되므로 블록 크기에 의해 결정된다고 볼 수 있다.
+[CUDA Programming Model](/cuda/study/02_cuda_programming_model.md)에서 벡터 덧셈 예제를 통해 그리드와 블록 사이즈를 사용하여 스레드를 어떻게 조직화하는지 살펴볼 수 있다. 스레드를 어떻게 조직화하느냐에 따라 커널의 성능에 큰 영향을 미칠 수 있는데, 이전의 벡터 덧셈 예제([vector_add.cu](/cuda/code/vector_add/vector_add.cu)에서 블록의 크기를 조절하여 최적의 성능을 찾을 수 있다. 그리드의 크기는 사실 데이터의 수와 블록 크기를 통해 계산되므로 블록 크기에 의해 결정된다고 볼 수 있다.
 
 > 이번 포스팅을 준비하면서 그리드와 블록 크기에 따른 성능을 비교했는데, naive한 구현에서는 그리드와 블록 크기에 따른 성능 차이는 거의 없었다 (구현에 따른 차이는 제외).
 >
@@ -197,7 +197,7 @@ thread_id (3,1)  block_id (0,0)  coordinate (3,1)  global_index 11  val 11
 
 # Matrices with a 2D Grid and 2D Blocks
 
-> 전체 코드는 [matrix_add.cu](/code/cuda/matrix_add/matrix_add.cu) 를 참조
+> 전체 코드는 [matrix_add.cu](/cuda/code/matrix_add/matrix_add.cu) 를 참조
 
 먼저 살펴볼 내용은 2D grid with 2D blocks를 사용하는 행렬 덧셈 커널이다. 2D 스레드 블록을 사용하여 행렬을 더하는 커널은 아래와 같이 작성할 수 있다.
 ```c++
@@ -218,7 +218,7 @@ void sumMatrixOnGPU2D(float const* A, float const* B, float* C, int nx, int ny)
 
 <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FPm7Oq%2FbtrYvm6q584%2FHzkuakcdlTSQqCwI9n1ul0%2Fimg.png" width=500px style="display: block; margin: 0 auto"/>
 
-[matrix_add.cu](/code/cuda/matrix_add/matrix_add.cu) 를 컴파일하고, 실행하면 아래와 같은 출력 결과를 얻을 수 있다. 아래 출력은 $2^{14} \times 2^{14}$ 행렬에 대해 스레드 블록의 크기를 (16,16)으로 지정하여 실행시킨 결과이다.
+[matrix_add.cu](/cuda/code/matrix_add/matrix_add.cu) 를 컴파일하고, 실행하면 아래와 같은 출력 결과를 얻을 수 있다. 아래 출력은 $2^{14} \times 2^{14}$ 행렬에 대해 스레드 블록의 크기를 (16,16)으로 지정하여 실행시킨 결과이다.
 
 ```
 > Matrix size: 16384 x 16384

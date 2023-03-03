@@ -62,9 +62,9 @@ tile[threadIdx.x][threadIdx.y]
 
 ## Accessing Row-Major vs. Column-Major
 
-> 전체 코드는 [smem_square.cu](/code/cuda/shared_memory_access/smem_square.cu)를 참조
+> 전체 코드는 [smem_square.cu](/cuda/code/shared_memory_access/smem_square.cu)를 참조
 
-각 차원에 32개의 스레드가 있는 하나의 그리드로 실행되는 예제 커널들을 살펴보자. [smem_square.cu](/code/cuda/shared_memory_access/smem_square.cu) 코드에서는 블록의 차원을 아래의 매크로를 통해 정의한다.
+각 차원에 32개의 스레드가 있는 하나의 그리드로 실행되는 예제 커널들을 살펴보자. [smem_square.cu](/cuda/code/shared_memory_access/smem_square.cu) 코드에서는 블록의 차원을 아래의 매크로를 통해 정의한다.
 ```c++
 #define BDIMX 32
 #define BDIMY 32
@@ -296,7 +296,7 @@ setRowReadColDyn(int *), Context 1, Stream 7
 
 ## Padding Statically Declared Shared Memory
 
-[Shared Memory: Memory Padding](/cuda-study/12_shared_memory.md#memory-padding)에서 **memory padding**에 대해서 알아봤고, 이는 bank conflict를 피하는 방법 중 하나이다. 정적으로 할당된 shared memory에 padding을 적용하는 것은 간단한데, 단순히 innermost 차원에 원하는 크기만큼의 padding을 추가해주면 된다.
+[Shared Memory: Memory Padding](/cuda/study/12_shared_memory.md#memory-padding)에서 **memory padding**에 대해서 알아봤고, 이는 bank conflict를 피하는 방법 중 하나이다. 정적으로 할당된 shared memory에 padding을 적용하는 것은 간단한데, 단순히 innermost 차원에 원하는 크기만큼의 padding을 추가해주면 된다.
 ```c++
 __shared__ int tile[BDIMY][BDIMX + 1];
 ```
@@ -408,7 +408,7 @@ setRowReadColDynPad(int *), Context 1, Stream 7
 
 정사각 배열의 경우와 달리, 직사각 배열을 참조할 때, 단순히 스레드 `x`, `y` 좌표를 바꾸는 것만으로는 transpose operation을 수행할 수 없다. 정사각 배열에서 구현한 커널을 직사각 배열에 적용하면 memory access violation이 발생한다. 따라서, 이전 섹션에서 square shared memory에 대해 구현했던 모든 커널들을 새로 구현해야 한다. 사실, 완전히 새로 구현하는 것은 아니고 access index만 새로 계산해주면 된다.
 
-> 전체 코드는 [smem_rectangle.cu](/code/cuda/shared_memory_access/smem_rectangle.cu)을 참조
+> 전체 코드는 [smem_rectangle.cu](/cuda/code/shared_memory_access/smem_rectangle.cu)을 참조
 
 [Squared Shared Memory](#square-shared-memory)에서 구현한 것과 유사하도록 구현하기 위해서 이번에는 각 행은 32개의 요소로 구성되고 각 열은 16개의 요소루 구성되는 rectangular shared memory array를 사용하여 커널을 구현한다. 각 차원의 크기는 아래의 매크로를 통해 정의된다.
 ```c++

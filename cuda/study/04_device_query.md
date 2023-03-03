@@ -81,7 +81,7 @@ deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 12.0, CUDA Runtime Vers
 Result = PASS
 ```
 
-꽤 많은 정보들을 담고 있는데, 필요한 것들만 추려서 따로 출력해주도록 [device_query.cpp](/code/cuda/device_query/device_query.cpp)를 올려두었으니 참조해도 좋을 것 같다.
+꽤 많은 정보들을 담고 있는데, 필요한 것들만 추려서 따로 출력해주도록 [device_query.cpp](/cuda/code/device_query/device_query.cpp)를 올려두었으니 참조해도 좋을 것 같다.
 
 ## Determining the Best GPU
 

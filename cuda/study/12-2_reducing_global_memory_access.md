@@ -12,13 +12,13 @@
 
 # Reducing Global Memory Access
 
-Shared memory를 사용하는 이유 중 하나는 데이터를 on-chip에 캐싱하기 위해서이다. 이를 통해 커널 내에서 global memory access 횟수를 감소시킨다. [Avoiding Branch Divergence](/cuda-study/07_avoiding_branch_divergence.md)와 [Unrolling Loops](/cuda-study/08_unrolling_loops.md)에서 parallel reduction problem을 다루었는데, 이번 포스팅에서는 parallel reduction에 shared memory를 사용하는 커널을 구현하고 성능에 어떠한 영향을 미치는지 살펴본다.
+Shared memory를 사용하는 이유 중 하나는 데이터를 on-chip에 캐싱하기 위해서이다. 이를 통해 커널 내에서 global memory access 횟수를 감소시킨다. [Avoiding Branch Divergence](/cuda/study/07_avoiding_branch_divergence.md)와 [Unrolling Loops](/cuda/study/08_unrolling_loops.md)에서 parallel reduction problem을 다루었는데, 이번 포스팅에서는 parallel reduction에 shared memory를 사용하는 커널을 구현하고 성능에 어떠한 영향을 미치는지 살펴본다.
 
-> 해당 포스팅에서 사용되는 전체 코드는 [reduce_smem.cu](/code/cuda/reduce_integer/reduce_smem.cu)을 참조
+> 해당 포스팅에서 사용되는 전체 코드는 [reduce_smem.cu](/cuda/code/reduce_integer/reduce_smem.cu)을 참조
 
 # Parallel Reduction with Shared Memory
 
-아래의 `reduceGmem` 커널을 baseline으로 살펴보자. 이 커널은 [Unrolling Loops](/cuda-study/08_unrolling_loops.md)에서 다루었던 커널이며 오직 global memory만을 사용하고 unrolling warp 기법이 적용되어 있다.
+아래의 `reduceGmem` 커널을 baseline으로 살펴보자. 이 커널은 [Unrolling Loops](/cuda/study/08_unrolling_loops.md)에서 다루었던 커널이며 오직 global memory만을 사용하고 unrolling warp 기법이 적용되어 있다.
 
 ```c++
 // unrolling warp + gmem
@@ -111,7 +111,7 @@ if (tid == 0) g_out[blockIdx.x] = in[0];
 
 > 포스팅에서 테스트하는 모든 커널들에 대한 입력 배열의 크기는 16M이며, 스레드 블록의 크기는 256 threads를 사용한다.
 
-[reduce_smem.cu](/code/cuda/reduce_integer/reduce_smem.cu) 코드를 컴파일하고, `nsight system`으로 커널을 프로파일링해보면 아래와 같은 결과를 얻을 수 있다.
+[reduce_smem.cu](/cuda/code/reduce_integer/reduce_smem.cu) 코드를 컴파일하고, `nsight system`으로 커널을 프로파일링해보면 아래와 같은 결과를 얻을 수 있다.
 ```
 $ nvcc -O3 -o reduce_smem reduce_smem.cu
 $ nsys profile --stats=true ./reduce_smem
@@ -218,7 +218,7 @@ reduceSmem(int *, int *, unsigned int), Context 1, Stream 7
 
 # Parallel Reduction with Unrolling
 
-[Unrolling Loops](/cuda-study/08_unrolling_loops.md)에서 다루었던 unrolling loop 기법을 적용해보자. 커널에서의 unrolling loop는 하나의 스레드 블록이 여러 개의 데이터 블록을 처리하도록 하는 기법을 의미한다. 여기서는 하나의 스레드 블록의 4개의 데이터 블록을 처리하도록 하여, 커널의 성능을 향상시킨다.
+[Unrolling Loops](/cuda/study/08_unrolling_loops.md)에서 다루었던 unrolling loop 기법을 적용해보자. 커널에서의 unrolling loop는 하나의 스레드 블록이 여러 개의 데이터 블록을 처리하도록 하는 기법을 의미한다. 여기서는 하나의 스레드 블록의 4개의 데이터 블록을 처리하도록 하여, 커널의 성능을 향상시킨다.
 
 Unrolling을 적용하여 기대할 수 있는 이점은 아래와 같이 요약할 수 있다.
 - 스레드에 더 많은 parallel I/O를 노출시켜 global memory throughput을 증가시킬 수 있음
@@ -338,7 +338,7 @@ void reduceSmemUnroll(int* g_in, int* g_out, unsigned int const n)
 }
 ```
 
-> Unrolling 기법에 대한 자세한 내용은 [Unrolling Loops](/cuda-study/08_unrolling_loops.md)를 참조
+> Unrolling 기법에 대한 자세한 내용은 [Unrolling Loops](/cuda/study/08_unrolling_loops.md)를 참조
 
 당연하지만, 각 스레드가 4개의 데이터 요소를 처리하기 때문에 커널을 실행할 때 그리드의 크기를 1/4로 감소시켜주어야 한다.
 ```c++
@@ -425,9 +425,9 @@ extern __shared__ int smem[];
 reduceSmemUnrollDyn<<<grid.x / 4, block, DIM * sizeof(int)>>>(d_in, d_out, num_elements);
 ```
 
-커널(`reduceSmemDyn`, `reduceSmemUnrollDyn`) 코드 구현은 [reduce_smem.cu](/code/cuda/reduce_integer/reduce_smem.cu)에서 확인할 수 있다.
+커널(`reduceSmemDyn`, `reduceSmemUnrollDyn`) 코드 구현은 [reduce_smem.cu](/cuda/code/reduce_integer/reduce_smem.cu)에서 확인할 수 있다.
 
-> [Data Layout of Shared Memory](/cuda-study/12-1_data_layout_of_shared_memory.md)에서도 언급했지만, 동적으로 shared memory를 할당할 때와 정적으로 할당할 때의 성능 차이는 확인이 되지 않는다. 측정 시, 동적으로 할당할 때가 더 빠르게 측정될 때도 있다.
+> [Data Layout of Shared Memory](/cuda/study/12-1_data_layout_of_shared_memory.md)에서도 언급했지만, 동적으로 shared memory를 할당할 때와 정적으로 할당할 때의 성능 차이는 확인이 되지 않는다. 측정 시, 동적으로 할당할 때가 더 빠르게 측정될 때도 있다.
 
 # Effiective Bandwidth
 

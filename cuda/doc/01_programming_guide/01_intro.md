@@ -52,7 +52,7 @@ CUDA 프로그래밍에 대해 본격적으로 살펴보면 쉽게 이해할 수
 
 여기서 컴파일된 CUDA 프로그램 내에는 8개의 스레드 블록을 사용하도록 구성되어 있는데, 서로 다른 수의 SM(streaming multiprocessor)를 갖는 GPU에서 코드 수정없이 실행될 수 있다는 것을 보여준다. 직관적으로 다가오지 않더라도, CUDA 프로그래밍을 알아가다보면 이 부분은 자연스럽게 이해되는 부분이다.
 
-> [Heterogeneous Computing](/cuda-study/01_heterogeneous_computing.md)에서 이와 관련된 내용에 대해 추가로 다루고 있음
+> [Heterogeneous Computing](/cuda/study/01_heterogeneous_computing.md)에서 이와 관련된 내용에 대해 추가로 다루고 있음
 
 <br>
 

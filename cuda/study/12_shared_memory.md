@@ -33,7 +33,7 @@ Global memory는 큰 on-board memory이며, 비교적 높은 latency를 갖는�
 - A program-managed cache for global memory data
 - Scratch pad memory for transforming data to improve global memory access patterns
 
-이번 포스팅에서는 shared memory에 대해 자세히 살펴보고, 다른 포스팅들을 통해 reduction과 matrix transpose 예제에 어떻게 shared memory를 적용할 수 있는지, 그리고 성능에 어떻게 영향을 미치는지 알아본다.
+이번 포스팅에서는 shared memory에 대해 자세히 살펴보고, 다른 포스팅들을 통해 [reduction](/cuda/study/12-2_reducing_global_memory_access.md)과 [matrix transpose](/cuda/study/12-3_coalescing_global_memory_accesses.md) 예제에 어떻게 shared memory를 적용할 수 있는지, 그리고 성능에 어떻게 영향을 미치는지 알아본다.
 
 # Shared Memory
 
@@ -78,7 +78,7 @@ kernel<<<grid, block, num_elements * sizeof(int)>>>(...)
 
 # Shared Memory Banks and Access Mode
 
-메모리 성능을 최적화할 때 측정해야할 두 가지 핵심 속성은 latency와 bandwidth이다. [Memory Access Pattern](/cuda-study/11_memory_access_patterns.md)에서는 여러 global memory access pattern들이 어떻게 latency와 bandwidth에 영향을 미치는지 살펴봤다. Shared memory는 global memory latency와 bandwidth 성능의 영향을 숨기기 위해 사용할 수 있다. 먼저 shared memory를 최대한 활용하기 위해서 어떻게 shared memory가 정렬되는지 이해하는 것이 중요하다.
+메모리 성능을 최적화할 때 측정해야할 두 가지 핵심 속성은 latency와 bandwidth이다. [Memory Access Pattern](/cuda/study/11_memory_access_patterns.md)에서는 여러 global memory access pattern들이 어떻게 latency와 bandwidth에 영향을 미치는지 살펴봤다. Shared memory는 global memory latency와 bandwidth 성능의 영향을 숨기기 위해 사용할 수 있다. 먼저 shared memory를 최대한 활용하기 위해서 어떻게 shared memory가 정렬되는지 이해하는 것이 중요하다.
 
 ## Memory Banks
 

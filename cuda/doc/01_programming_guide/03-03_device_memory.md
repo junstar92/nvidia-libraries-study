@@ -8,7 +8,7 @@
 
 # Device Memory
 
-[Heterogeneous Programming](/cuda-doc/01_programming_guide/02_programming_model.md#heterogeneous-programming)에서 언급했듯, CUDA 프로그래밍 모델은 host와 device로 구성된 시스템이라고 가정하고, host와 device는 저마다의 분리된 메모리를 가지고 있다고 가정한다. 커널 함수는 device memory에서 동작하기 때문에 CUDA runtime은 device memory를 할당/해제하고, device memory를 복사하고, host memory와 device memory 간에 데이터를 전송하는 함수를 제공한다.
+[Heterogeneous Programming](/cuda/doc/01_programming_guide/02_programming_model.md#heterogeneous-programming)에서 언급했듯, CUDA 프로그래밍 모델은 host와 device로 구성된 시스템이라고 가정하고, host와 device는 저마다의 분리된 메모리를 가지고 있다고 가정한다. 커널 함수는 device memory에서 동작하기 때문에 CUDA runtime은 device memory를 할당/해제하고, device memory를 복사하고, host memory와 device memory 간에 데이터를 전송하는 함수를 제공한다.
 
 Device memory는 **linear memory** 또는 **CUDA arrays** 로 할당될 수 있다. CUDA arrays는 texture fetching에 최적화된 opaque memory layout이며, 공식 문서의 [Texture and Surface Memory](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#texture-and-surface-memory)에서 이에 대해 설명한다.
 
@@ -21,7 +21,7 @@ Linear memory는 single unified address space에 할당된다고 공식 문서�
 
 <br>
 
-Linear memory는 일반적으로 `cudaMalloc()`을 사용하여 할당되고, `cudaFree()`를 사용하여 할당된 메모리를 해제한다. 그리고 host memory와 device memory 간의 data transfer는 일반적으로 `cudaMemcpy()`를 사용한다. [vector_add.cu](/code/cuda/vector_add/vector_add.cu)를 보면, device memory의 할당/해제/복사 방법을 살펴볼 수 있다.
+Linear memory는 일반적으로 `cudaMalloc()`을 사용하여 할당되고, `cudaFree()`를 사용하여 할당된 메모리를 해제한다. 그리고 host memory와 device memory 간의 data transfer는 일반적으로 `cudaMemcpy()`를 사용한다. [vector_add.cu](/cuda/code/vector_add/vector_add.cu)를 보면, device memory의 할당/해제/복사 방법을 살펴볼 수 있다.
 
 <br>
 

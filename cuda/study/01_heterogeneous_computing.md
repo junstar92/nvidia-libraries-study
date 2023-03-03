@@ -43,7 +43,7 @@ GPU 연산은 단순히 CPU 연산을 대체하는 것이 아니다. CPU나 GPU 
 
 # CUDA : A Platform for Heterogeneous Computing
 
-CUDA는 범용 병렬 연산 플랫폼이며, NVIDIA GPU에서 병렬 연산 엔진을 활용하는 프로그래밍 모델이다. CUDA를 사용해서 CPU에서 하던 것처럼 GPU에서 연산을 수행할 수 있다. 이 부분에 대해서는 [여기](/cuda-doc/01_programming_guide/01_intro.md#cuda--a-general-purpose-parallel-computing-platform-and-programming-model)에서 간단히 살펴볼 수 있다.
+CUDA는 범용 병렬 연산 플랫폼이며, NVIDIA GPU에서 병렬 연산 엔진을 활용하는 프로그래밍 모델이다. CUDA를 사용해서 CPU에서 하던 것처럼 GPU에서 연산을 수행할 수 있다. 이 부분에 대해서는 [여기](/cuda/doc/01_programming_guide/01_intro.md#cuda--a-general-purpose-parallel-computing-platform-and-programming-model)에서 간단히 살펴볼 수 있다.
 
 CUDA C는 표준 C ANSI의 확장에 몇 가지 GPU 프로그래밍을 위한 것들이 추가된 것이다. CUDA C++도 지원하며, 이에 대한 내용은 공식 문서를 통해 살펴볼 수 있다. 그리고 간단한 CUDA APIs를 통해 GPU 장치/메모리 등을 관리할 수 있다. 또한, CUDA는 다양한 NVIDIA GPU에 코드 변경없이 병렬 처리를 적용할 수 있는 scalable programming model 이다. 
 

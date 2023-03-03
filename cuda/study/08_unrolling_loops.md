@@ -35,9 +35,9 @@ High-level 코드만 봤을 때, loop unrolling이 어떻게 성능을 향상시
 
 CUDA에서의 loop unrolling은 여러 가지를 의미할 수 있는데, 목적은 성능 향상으로 동일하다. 즉, instruction overhead를 줄이고 더 많은 독립적인 instruction을 스케쥴링하는 것이다. 결과적으로 더 많은 concurrent operation들이 파이프라인에 추가되어 instruction과 memory의 bandwidth를 더 많이 활용한다.
 
-이번 포스팅에서는 [Avoiding Branch Divergence](/cuda-study/07_avoiding_branch_divergence.md)에서 살펴본 reduction problem 문제에 loop unrolling을 적용하여 성능이 얼마나 좋아지는지 확인한다.
+이번 포스팅에서는 [Avoiding Branch Divergence](/cuda/study/07_avoiding_branch_divergence.md)에서 살펴본 reduction problem 문제에 loop unrolling을 적용하여 성능이 얼마나 좋아지는지 확인한다.
 
-> 전체 코드는 [reduce_integer.cu](/code/cuda/reduce_integer/reduce_integer.cu)를 참조바람
+> 전체 코드는 [reduce_integer.cu](/cuda/code/reduce_integer/reduce_integer.cu)를 참조바람
 
 <br>
 
@@ -111,7 +111,7 @@ gpu reduceInterleaved   elapsed 0.2650 ms     gpu sum: 2139353471 <<<grid 32768 
 gpu reduceUnrolling2    elapsed 0.1624 ms     gpu sum: 2139353471 <<<grid 16384 block 512>>>
 ```
 
-[Avoiding Branch Divergence](/cuda-study/07_avoiding_branch_divergence.md)에서 살펴본 baseline인 `reduceNeighbored` 커널보다 약 3.5배 정도 속도가 향상되었고, `reduceInterleaved` 커널보다는 약 1.6배 정도 속도가 향상되었다.
+[Avoiding Branch Divergence](/cuda/study/07_avoiding_branch_divergence.md)에서 살펴본 baseline인 `reduceNeighbored` 커널보다 약 3.5배 정도 속도가 향상되었고, `reduceInterleaved` 커널보다는 약 1.6배 정도 속도가 향상되었다.
 
 마찬가지로 unrolling factor가 4, 8인 경우도 간단히 구현할 수 있는데, 각각의 factor로 구현한 커널은 다음과 같다.
 ```c++
@@ -506,9 +506,9 @@ switch (block_size) {
 $ sudo ncu --metrics smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct,smsp__sass_average_data_bytes_per_sector_mem_global_op_st.pct ./reduce_integer
 ```
 
-[Avoiding Branch Divergence](/cuda-study/07_avoiding_branch_divergence.md)과 이번 포스팅에서 구현한 모든 커널에 대해 load/store efficiency를 `nsighe compute`를 통해 측정한 결과를 비교하면 다음과 같다. 실행 커맨드는 위와 같다.
+[Avoiding Branch Divergence](/cuda/study/07_avoiding_branch_divergence.md)과 이번 포스팅에서 구현한 모든 커널에 대해 load/store efficiency를 `nsighe compute`를 통해 측정한 결과를 비교하면 다음과 같다. 실행 커맨드는 위와 같다.
 
-> 전체 코드는 [reduce_integer.cu](/code/cuda/reduce_integer/reduce_integer.cu)를 참조 바람
+> 전체 코드는 [reduce_integer.cu](/cuda/code/reduce_integer/reduce_integer.cu)를 참조 바람
 
 |Kernel|Time (ms)|Load Efficiency (%)|Store Efficiency(%)|
 |:--|--:|--:|--:|

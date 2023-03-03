@@ -262,21 +262,25 @@ int main(int argc, char** argv)
             break;
         
         case 4:
+            grid.x = (nx + block.x * 4 - 1) / (block.x * 4);
             kernel_func = &transposeUnroll4Row;
             kernel_name = "Unroll4Row    ";
             break;
         
         case 5:
+            grid.x = (nx + block.x * 4 - 1) / (block.x * 4);
             kernel_func = &transposeUnroll4Col;
             kernel_name = "Unroll4Col    ";
             break;
         
         case 6:
+            grid.x = (nx + block.x - 1) / block.x;
             kernel_func = &transposeDiagonalRow;
             kernel_name = "DiagonalRow   ";
             break;
         
         case 7:
+            grid.x = (nx + block.x - 1) / block.x;
             kernel_func = &transposeDiagonalCol;
             kernel_name = "DiagonalCol   ";
             break;

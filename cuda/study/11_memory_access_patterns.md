@@ -20,7 +20,7 @@
 
 대부분의 device data access는 global memory로부터 시작되며, global memory의 bandwidth는 제한되어 있다. 따라서, 커널의 성능을 끌어올리는 첫 번째 단계는 global memory bandwidth를 최대한 활용하는 것이다. Global memory 사용을 적절하게 조정하지 않는다면, 다른 최적화를 적용해도 그 영향이 미미할 수 있다.
 
-Data를 읽고 쓰는데 최적의 성능을 달성하기 위해서 memory access operation은 반드시 특정 조건들을 만족해야 한다. [CUDA execution model](/cuda-study/05_cuda_execution_model.md)의 특징 중 하나는 warp 단위로 instruction이 실행(issued/executed)된다는 것이다. Memory operation 또한 warp 단위로 실행된다. 
+Data를 읽고 쓰는데 최적의 성능을 달성하기 위해서 memory access operation은 반드시 특정 조건들을 만족해야 한다. [CUDA execution model](/cuda/study/05_cuda_execution_model.md)의 특징 중 하나는 warp 단위로 instruction이 실행(issued/executed)된다는 것이다. Memory operation 또한 warp 단위로 실행된다. 
 
 > instruction issue에 대한 정확한 의미는 stackoverflow([link](https://stackoverflow.com/a/49923841))에서 자세히 살명하고 있다.
 
@@ -117,7 +117,7 @@ void readOffset(float* a, float* b, int const n, int const offset)
 }
 ```
 
-> 전체 코드는 [read_segment.cu](/code/cuda/global_access_test/read_segment.cu)를 참조
+> 전체 코드는 [read_segment.cu](/cuda/code/global_access_test/read_segment.cu)를 참조
 
 데이터 배열 요소의 수는 128(512 bytes)개로 지정했고, `readOffset` 커널은 `<<<1,32>>>`(1 grid, 32 thread blocks)로 호출된다. 커널은 항상 32개의 스레드(1 warp)로만 호출되고 `float` 타입의 데이터 하나를 읽고 저장하므로, 이 커널이 수행되면 128바이트의 데이터를 요청한다.
 
@@ -196,7 +196,7 @@ void writeOffset(float* a, float* b, int const n, int const offset)
 }
 ```
 
-> 전체 코드는 [write_segment.cu](/code/cuda/misaligned_access_test/write_segment.cu)를 참조
+> 전체 코드는 [write_segment.cu](/cuda/code/misaligned_access_test/write_segment.cu)를 참조
 
 [Example: Misaligned Reads](#example-misaligned-reads)와 동일한 조건으로 테스트를 수행했다. 이번에는 `nsight compute`를 통해 프로파일링할 때, `l1tex__t_sectors_pipe_lsu_mem_global_op_st.sum`와 `smsp__sass_average_data_bytes_per_sector_mem_global_op_st.pct` 메트릭을 사용한다. 이 메트릭은 각각 memory store transaction의 수와 global memory store operation 효율을 나타낸다.
 
@@ -286,7 +286,7 @@ void testInnerStruct(innerStruct* data, innerStruct* result, int const n)
 }
 ```
 
-> 전체 코드는 [test_AoS.cu](/code/cuda/misaligned_access_test/test_AoS.cu)를 참조
+> 전체 코드는 [test_AoS.cu](/cuda/code/misaligned_access_test/test_AoS.cu)를 참조
 
 위 커널 코드를 컴파일하고 `nsight compute`를 통해 global memory load/store 효율을 측정하면 아래와 같은 결과를 얻을 수 있다.
 ```
@@ -306,7 +306,7 @@ testInnerStruct(innerStruct *, innerStruct *, int), Context 1, Stream 7
 
 [Example: AoS Data Layout](#example-aos-data-layout)와 동일한 조건으로 아래의 커널을 구현하여 테스트한다.
 
-> 전체 코드는 [test_SoA.cu](/code/cuda/misaligned_access_test/test_SoA.cu)를 참조
+> 전체 코드는 [test_SoA.cu](/cuda/code/misaligned_access_test/test_SoA.cu)를 참조
 
 ```c++
 __global__

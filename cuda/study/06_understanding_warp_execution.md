@@ -13,7 +13,7 @@
 
 # Understanding Warp Execution
 
-커널을 실행(launch)할 때, software 관점에서는 모든 스레드가 동시에 실행되는 것처럼 보인다. 논리적 관점(logical view)에서 이 말은 사실이다. 하지만 하드웨어 관점(hardware view)에서는 모든 스레드가 물리적으로 동시에 병렬로 실행되지 않는다. [CUDA Execution Model](/cuda-study/05_cuda_execution_model.md)에서 언급했듯이 CUDA는 32개의 스레드를 하나의 execution unit으로 그룹화하여 태스크를 수행하게 된다. 이번 포스팅에서는 하드웨어 관점에서의 warp execution에 대해 조금 더 자세히 살펴본다.
+커널을 실행(launch)할 때, software 관점에서는 모든 스레드가 동시에 실행되는 것처럼 보인다. 논리적 관점(logical view)에서 이 말은 사실이다. 하지만 하드웨어 관점(hardware view)에서는 모든 스레드가 물리적으로 동시에 병렬로 실행되지 않는다. [CUDA Execution Model](/cuda/study/05_cuda_execution_model.md)에서 언급했듯이 CUDA는 32개의 스레드를 하나의 execution unit으로 그룹화하여 태스크를 수행하게 된다. 이번 포스팅에서는 하드웨어 관점에서의 warp execution에 대해 조금 더 자세히 살펴본다.
 
 ## Warps and Thread Blocks
 
@@ -89,7 +89,7 @@ Warp divergence가 발생하면, warp는 각 branch path를 순차적으로 실�
 
 간단한 커널 함수들을 통해서 warp divergence에 대해 살펴보자.
 
-> 전체 코드는 [warp_divergence.cu](/code/cuda/warp_divergence/warp_divergence.cu)를 참조 바람.
+> 전체 코드는 [warp_divergence.cu](/cuda/code/warp_divergence/warp_divergence.cu)를 참조 바람.
 
 먼저, 아래의 코드처럼 커널이 2개의 branch를 가지도록 작성한다. 이 코드에서는 데이터를 짝수/홀수 스레드로 파티셔닝하는데, warp divergence를 일으키기 때문에 상당히 좋지 않은 코드이다. `(tid % 2 == 0)`이라는 조건은 짝수 ID의 스레드들은 `if`문을 수행하고 홀수 ID의 스레드들은 `else`문을 수행하도록 한다.
 
@@ -128,7 +128,7 @@ void mathKernel2(float* c)
 }
 ```
 
-[warp_divergence.cu](/code/cuda/warp_divergence/warp_divergence.cu)를 아래의 커맨드를 통해 컴파일하고,
+[warp_divergence.cu](/cuda/code/warp_divergence/warp_divergence.cu)를 아래의 커맨드를 통해 컴파일하고,
 
 ```
 $ nvcc -o warp_divergence warp_divergence
@@ -267,7 +267,7 @@ Warp의 local execution context는 주로 아래의 리소스들로 구성된다
 - Registers
 - Shared memory
 
-RTX3080 정보를 runteim API로 쿼리하면 아래와 같은 정보를 얻을 수 있다 ([Device Qeury](/cuda-study/04_device_query.md) 참조).
+RTX3080 정보를 runteim API로 쿼리하면 아래와 같은 정보를 얻을 수 있다 ([Device Qeury](/cuda/study/04_device_query.md) 참조).
 ```
 Total amount of constant memory:               65536 bytes
 Total amount of shared memory per block:       49152 bytes
@@ -307,7 +307,7 @@ SM에 상주하는 Warp는 아래 두 가지 조건이 만족되면 eligible war
 
 $$ \text{occupancy} = \frac{\text{active warps}}{\text{maximum warps}} $$
 
-여기서 SM당 maximum warps의 수는 `cudaGetDeviceProperties(...)` runtime API를 통해 구할 수 있다. [device_query.cpp](/code/cuda/device_query/device_query.cpp) 코드에서 SM당 가능한 최대 warp의 수를 계산하여 출력하는데, 아래와 같이 계산한다. RTX3080의 경우에는 SM당 최대 48개의 warp가 가능하다.
+여기서 SM당 maximum warps의 수는 `cudaGetDeviceProperties(...)` runtime API를 통해 구할 수 있다. [device_query.cpp](/cuda/code/device_query/device_query.cpp) 코드에서 SM당 가능한 최대 warp의 수를 계산하여 출력하는데, 아래와 같이 계산한다. RTX3080의 경우에는 SM당 최대 48개의 warp가 가능하다.
 ```
 printf("  Maximum number of warps per multiprocessors:      %d\n", dev_prop.maxThreadsPerMultiProcessor / dev_prop.warpSize);
 ```
@@ -354,7 +354,7 @@ ptxas info    : Used 10 registers, 360 bytes cmem[0]
 
 ## Checking Active Warps with Nsight Compute
 
-Nsight Compute를 통해 커널의 occupancy 비율을 측정할 수 있다. [matrix_add2.cu](/code/cuda/matrix_add/matrix_add2.cu) 코드를 사용하여, 블록 사이즈에 따라 occupancy가 어떻게 변하는지 확인해보자. 이 코드에서는 간단히 행렬 덧셈을 2D block approach로 구현한 커널을 테스트한다.
+Nsight Compute를 통해 커널의 occupancy 비율을 측정할 수 있다. [matrix_add2.cu](/cuda/code/matrix_add/matrix_add2.cu) 코드를 사용하여, 블록 사이즈에 따라 occupancy가 어떻게 변하는지 확인해보자. 이 코드에서는 간단히 행렬 덧셈을 2D block approach로 구현한 커널을 테스트한다.
 
 ```c++
 __global__
@@ -370,7 +370,7 @@ void sumMatrixOnGPU2D(float const* A, float const* B, float* C, int nx, int ny)
 }
 ```
 
-[matrix_add2.cu](/code/cuda/matrix_add/matrix_add2.cu)를 컴파일하고, 스레드 블록의 사이즈를 (32,32), (32,16), (16,32), (16,16)으로 각각 지정하여 실행시킨 결과는 다음과 같다.
+[matrix_add2.cu](/cuda/code/matrix_add/matrix_add2.cu)를 컴파일하고, 스레드 블록의 사이즈를 (32,32), (32,16), (16,32), (16,16)으로 각각 지정하여 실행시킨 결과는 다음과 같다.
 
 ```
 $ ./matrix_add 32 32

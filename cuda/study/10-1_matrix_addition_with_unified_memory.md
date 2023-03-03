@@ -8,7 +8,7 @@
 
 # Matrix Addition with Unified Memory
 
-[Memory Management](/cuda-study/10_memory_management.md)에서 **Unified Memory**에 대해 살펴봤었다. Unified Memory를 사용하면 CPU와 GPU 간의 data migration을 명시적으로 해줄 필요가 없어서 간결한 코드 작성이 가능하다. 또한, host와 device 메모리를 위한 포인터를 각각 사용할 필요없이 하나의 통합된 포인터 주소로 host와 device에서 액세스할 수 있다. 이번 포스팅에서는 unfied memory를 사용하는 행렬 덧셈 예제를 통해 unified memory를 어떻게 사용하는지, 그리고 기존의 메모리 사용 방법과 어떠한 성능 차이가 있는지 살펴본다.
+[Memory Management](/cuda/study/10_memory_management.md)에서 **Unified Memory**에 대해 살펴봤었다. Unified Memory를 사용하면 CPU와 GPU 간의 data migration을 명시적으로 해줄 필요가 없어서 간결한 코드 작성이 가능하다. 또한, host와 device 메모리를 위한 포인터를 각각 사용할 필요없이 하나의 통합된 포인터 주소로 host와 device에서 액세스할 수 있다. 이번 포스팅에서는 unfied memory를 사용하는 행렬 덧셈 예제를 통해 unified memory를 어떻게 사용하는지, 그리고 기존의 메모리 사용 방법과 어떠한 성능 차이가 있는지 살펴본다.
 
 Unified Memory는 host 코드 측에서 아래와 같이 할당할 수 있다.
 ```c++
@@ -32,9 +32,9 @@ cudaDeviceSynchronize();
 
 커널 함수를 호출한 뒤, host 측에서 `cudaDeviceSynchronize()`를 호출해주고 있다. 커널 함수는 기본적으로 비동기 호출이다. 기존의 메모리 사용 방법이라면 `cudaMemcpy`를 통해 동기화를 내부적으로 수행하고 있었지만, unified memory를 사용하면 host와 device 간의 명시적인 메모리 동기화가 필요하다.
 
-> 명시적인 memory transfer가 적용된 전체 코드는 [matrix_add_manual.cu](/code/cuda/matrix_add/matrix_add_manual.cu), unified memory를 사용한 전체 코드는 [matrix_add_managed.cu](/code/cuda/matrix_add/matrix_add_managed.cu)를 참조
+> 명시적인 memory transfer가 적용된 전체 코드는 [matrix_add_manual.cu](/cuda/code/matrix_add/matrix_add_manual.cu), unified memory를 사용한 전체 코드는 [matrix_add_managed.cu](/cuda/code/matrix_add/matrix_add_managed.cu)를 참조
 
-[matrix_add_manual.cu](/code/cuda/matrix_add/matrix_add_manual.cu)와 [matrix_add_managed.cu](/code/cuda/matrix_add/matrix_add_managed.cu)를 각각 컴파일한 뒤, 먼저 `managed`를 실행해보면 아래와 같은 출력 결과를 얻을 수 있다.
+[matrix_add_manual.cu](/cuda/code/matrix_add/matrix_add_manual.cu)와 [matrix_add_managed.cu](/cuda/code/matrix_add/matrix_add_managed.cu)를 각각 컴파일한 뒤, 먼저 `managed`를 실행해보면 아래와 같은 출력 결과를 얻을 수 있다.
 ```
 $ ./managed 14
 
@@ -79,7 +79,7 @@ Unified memory의 동작 메커니즘을 간단히 살펴보자. Unified memory�
 
 > `initialization` 시간에는 초기 CPU로 migration하는 시간까지 포함되어 있다고 생각했는데, `nsight system`으로 프로파일링한 결과, 할당된 다음 처음 발생하는 메모리 요청에 대해서는 migration이 발생하지 않는 것으로 확인된다. 그 결과, `initialization`에 걸리는 시간은 managed memory를 사용하는지 여부에 상관없이 거의 유사하다.
 
-[matrix_add_managed.cu](/code/cuda/matrix_add/matrix_add_managed.cu)에서는 다음의 순서로 managed memory를 사용하게 된다.
+[matrix_add_managed.cu](/cuda/code/matrix_add/matrix_add_managed.cu)에서는 다음의 순서로 managed memory를 사용하게 된다.
 
 1. `initMatrix`, `memset` : on host
 2. `matrixAddonHost` : on host

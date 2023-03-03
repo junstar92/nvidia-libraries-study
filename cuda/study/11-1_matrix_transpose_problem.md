@@ -23,7 +23,7 @@
 
 첫 번째 방법은 동시에 실행되는 warp 수를 극대화하여 memory latency를 hiding하는 것이다. 이를 통해 더 많은 메모리 액세스가 계속해서 수행되도록 유지하여 bus의 saturation을 높인다.
 
-두 번째 방법은 메모리 액세스 패턴을 정렬(aligned) 및 병합(coalesced)하여 memory bandwidth efficiency를 최대화하는 것이다. 이에 대해서는 [Memory Access Patterns](/cuda-study/11_memory_access_patterns.md)에서 다루었다.
+두 번째 방법은 메모리 액세스 패턴을 정렬(aligned) 및 병합(coalesced)하여 memory bandwidth efficiency를 최대화하는 것이다. 이에 대해서는 [Memory Access Patterns](/cuda/study/11_memory_access_patterns.md)에서 다루었다.
 
 메모리 액세스 패턴은 직면한 문제의 특성에 따라 결정될 수 있으며 커널에 별로 좋지 않은 액세스 패턴일 수 있다. 이번 포스팅에서는 matrix transpose(행렬 전치) 문제에 대해서 어떻게 최대한 액세스 패턴을 조정하여 좋은 성능을 달성할 수 있는지에 대해서 살펴볼텐데, 그 전에 memory bandwidth에 대해서 조금 더 살펴보자.
 
@@ -127,9 +127,9 @@ void copyCol(float* out, float const* in, int const nx, int const ny)
 }
 ```
 
-> 전체 코드는 [transpose.cu](/code/cuda/matrix_transpose/transpose.cu) 참조
+> 전체 코드는 [transpose.cu](/cuda/code/matrix_transpose/transpose.cu) 참조
 
-[transpose.cu](/code/cuda/matrix_transpose/transpose.cu) 코드를 컴파일하고 컴파일하면 아래와 같은 출력 결과를 얻을 수 있다 (warmup 커널은 startup overhead를 피하기 위함).
+[transpose.cu](/cuda/code/matrix_transpose/transpose.cu) 코드를 컴파일하고 컴파일하면 아래와 같은 출력 결과를 얻을 수 있다 (warmup 커널은 startup overhead를 피하기 위함).
 ```
 > Matrix transpose at device 0: NVIDIA GeForce RTX 3080
 > with matrix 2048 x 2048
@@ -289,7 +289,7 @@ transposeNaiveCol(float *, const float *, int, int), Context 1, Stream 7
 
 이번에는 unrolling 기법을 통해 memory bandwidth utilization을 향상시켜보자. Unrolling의 목적은 각 스레드가 더 많은 독립적인 작업들을 수행하도록 하여 in-flight memory request를 최대화하는 것이다.
 
-> Unrolling 기법에 대해서는 [Unrolling Loops](/cuda-study/08_unrolling_loops.md)에서 다루고 있음
+> Unrolling 기법에 대해서는 [Unrolling Loops](/cuda/study/08_unrolling_loops.md)에서 다루고 있음
 
 아래 코드는 unrolling factor를 4로 설정하여 구현한 커널이다. row-based, column-based으로 각각 구현하였다.
 
@@ -331,10 +331,12 @@ void transposeUnroll4Col(float* out, float const* in, int const nx, int const ny
 }
 ```
 
+두 커널은 하나의 스레드 블록이 여러 개의 데이터 블록을 처리하므로, 그리드의 x 차원 크기를 다시 계산해주어야 한다 (1/4 크기로).
+
 위 커널의 성능은 다음과 같이 측정되었다.
 ```
-Unroll4Row     elapsed time: 0.075072 ms <<< grid(128,128) block(16,16)>>> effective bandwidth: 446.963348 GB/s
-Unroll4Col     elapsed time: 0.062144 ms <<< grid(128,128) block(16,16)>>> effective bandwidth: 539.946472 GB/s
+Unroll4Row     elapsed time: 0.078080 ms <<< grid(32,128) block(16,16)>>> effective bandwidth: 429.744263 GB/s
+Unroll4Col     elapsed time: 0.059520 ms <<< grid(32,128) block(16,16)>>> effective bandwidth: 563.750549 GB/s
 ```
 
 |Kernel|Bandwidth|Ratio to Peak Bandwidth|
@@ -342,10 +344,10 @@ Unroll4Col     elapsed time: 0.062144 ms <<< grid(128,128) block(16,16)>>> effec
 |Theoretical peak bandwidth|760 GB/s||
 |`NaiveRow`: load rows/store columns|455.1 GB/s|59.9%|
 |`NaiveCol`: load columns/store rows|520.6 GB/s|68.5%|
-|`Unroll4Row`: load rows/store columns|447.0 GB/s|58.8%|
-|`Unroll4Col`: load columns/store rows|539.9 GB/s|71.0%|
+|`Unroll4Row`: load rows/store columns|429.7 GB/s|56.5%|
+|`Unroll4Col`: load columns/store rows|563.7 GB/s|74.1%|
 
-L1 캐시로 인해 `Unroll4Col` 구현의 성능이 더 좋으며 기존 구현인 `NaiveCol`보다 더 좋은 성능을 보여준다. `Unroll4Row`의 경우에는 `NaiveRow` 구현의 성능과 큰 차이가 없다.
+L1 캐시로 인해 `Unroll4Col` 구현의 성능이 더 좋으며 기존 구현인 `NaiveCol`보다 더 좋은 성능을 보여준다. `Unroll4Row`의 경우에는 `NaiveRow` 구현의 성능과 큰 차이가 없으며, 오히려 더 느리게 측정되었다.
 
 ## Diagonal Transpose
 
@@ -420,8 +422,8 @@ DiagonalCol    elapsed time: 0.065728 ms <<< grid(128,128) block(16,16)>>> effec
 |Theoretical peak bandwidth|760 GB/s||
 |`NaiveRow`: load rows/store columns|455.1 GB/s|59.9%|
 |`NaiveCol`: load columns/store rows|520.6 GB/s|68.5%|
-|`Unroll4Row`: load rows/store columns|447.0 GB/s|58.8%|
-|`Unroll4Col`: load columns/store rows|539.9 GB/s|71.0%|
+|`Unroll4Row`: load rows/store columns|429.7 GB/s|56.5%|
+|`Unroll4Col`: load columns/store rows|563.7 GB/s|74.1%|
 |`DiagonalRow`: load rows/store columns|441.3 GB/s|58.1%|
 |`DiagonalCol`: load columns/store rows|510.5 GB/s|67.2%|
 
@@ -429,7 +431,7 @@ DiagonalCol    elapsed time: 0.065728 ms <<< grid(128,128) block(16,16)>>> effec
 
 # Expose More Parallelism with Thin Blocks
 
-더 많은 병렬 처리를 수행하도록 하는 가장 간단한 방법은 블록의 크기를 조정하는 것이다. 지금까지는 (16,16) 크기에 대해서 측정했고, column-based 커널의 성능이 가장 좋다는 것을 살펴봤다. [transpose.cu](/code/cuda/matrix_transpose/transpose.cu)를 컴파일하고, 실행할 때 처음 두 개의 인자를 통해 블록의 크기를 지정할 수 있다. (8,8)부터 (32,32)까지의 블록 크기에 대한 `NaiveCol` 커널의 성능은 다음과 같다.
+더 많은 병렬 처리를 수행하도록 하는 가장 간단한 방법은 블록의 크기를 조정하는 것이다. 지금까지는 (16,16) 크기에 대해서 측정했고, column-based 커널의 성능이 가장 좋다는 것을 살펴봤다. [transpose.cu](/cuda/code/matrix_transpose/transpose.cu)를 컴파일하고, 실행할 때 처음 두 개의 인자를 통해 블록의 크기를 지정할 수 있다. (8,8)부터 (32,32)까지의 블록 크기에 대한 `NaiveCol` 커널의 성능은 다음과 같다.
 
 > 행렬 크기는 (2048 x 2048)
 
@@ -455,14 +457,14 @@ $ ./transpose 8 32
 
 > Matrix transpose at device 0: NVIDIA GeForce RTX 3080
 > with matrix 2048 x 2048
-warmup         elapsed time: 0.057824 ms
+warmup         elapsed time: 0.062144 ms
 CopyRow        elapsed time: 0.053248 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 630.153870 GB/s
-CopyCol        elapsed time: 0.055296 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 606.814819 GB/s
-NaiveRow       elapsed time: 0.056320 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 595.781799 GB/s
-NaiveCol       elapsed time: 0.059072 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 568.026001 GB/s
-Unroll4Row     elapsed time: 0.059904 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 560.136719 GB/s
-Unroll4Col     elapsed time: 0.057728 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 581.250549 GB/s
-DiagonalRow    elapsed time: 0.039776 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 843.584839 GB/s
+CopyCol        elapsed time: 0.055232 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 607.517944 GB/s
+NaiveRow       elapsed time: 0.057344 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 585.142822 GB/s
+NaiveCol       elapsed time: 0.057632 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 582.218750 GB/s
+Unroll4Row     elapsed time: 0.060416 ms <<< grid(64,64) block(8,32)>>> effective bandwidth: 555.389832 GB/s
+Unroll4Col     elapsed time: 0.057376 ms <<< grid(64,64) block(8,32)>>> effective bandwidth: 584.816528 GB/s
+DiagonalRow    elapsed time: 0.039424 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 851.116943 GB/s
 DiagonalCol    elapsed time: 0.036704 ms <<< grid(256,64) block(8,32)>>> effective bandwidth: 914.190063 GB/s
 ```
 
@@ -470,12 +472,12 @@ DiagonalCol    elapsed time: 0.036704 ms <<< grid(256,64) block(8,32)>>> effecti
 |--|--:|:--:|
 |Theoretical peak bandwidth|760 GB/s||
 |`CopyRow`: load/store using rows|630.2 GB/s|82.9%|
-|`CopyCol`: load/store using columns|606.8 GB/s|79.8%|
-|`NaiveRow`: load rows/store columns|595.8 GB/s|78.4%|
-|`NaiveCol`: load columns/store rows|568.0 GB/s|74.7%|
-|`Unroll4Row`: load rows/store columns|560.1 GB/s|73.7%|
-|`Unroll4Col`: load columns/store rows|581.3 GB/s|76.5%|
-|`DiagonalRow`: load rows/store columns|843.6 GB/s|111.0%|
+|`CopyCol`: load/store using columns|607.5 GB/s|79.8%|
+|`NaiveRow`: load rows/store columns|585.1 GB/s|76.9%|
+|`NaiveCol`: load columns/store rows|582.2 GB/s|76.6%|
+|`Unroll4Row`: load rows/store columns|555.4 GB/s|73.1%|
+|`Unroll4Col`: load columns/store rows|584.8 GB/s|76.9%|
+|`DiagonalRow`: load rows/store columns|851.1 GB/s|111.9%|
 |`DiagonalCol`: load columns/store rows|914.2 GB/s|120.3%|
 
 > 블록 크기 (8, 32), 행렬 크기 (2048 x 2048)

@@ -215,7 +215,7 @@ cudaError_t cudaHostGetDevicePointer(void **pDevice, void *pHost, unsigned int f
 
 이 함수는 device에서 mapped, pinned host memory에 참조할 수 있는 device pointer를 리턴한다. 만약 device가 mapped, pinned host memory를 지원하지 않는다면 이 함수는 에러를 리턴한다. `flags`에는 현재 0만 전달 가능하다.
 
-Zero-copy를 사용해서 read/write를 빈번하게 수행하면 성능이 크게 저하된다. Mapped memory에 대한 모든 memory transaction은 PCIe Bus를 통과해야되기 때문에 global memory와 비교했을 때 상당한 latency가 추가된다. Global memory와 zero-copy memory 간의 성능 비교는 [vector_add_zerocopy.cu](/code/cuda/vector_add/vector_add_zerocopy.cu) 코드를 통해 확인할 수 있다. 아래 코드는 [vector_add_zerocopy.cu](/code/cuda/vector_add/vector_add_zerocopy.cu)의 일부분을 간단히 요약한 것이다.
+Zero-copy를 사용해서 read/write를 빈번하게 수행하면 성능이 크게 저하된다. Mapped memory에 대한 모든 memory transaction은 PCIe Bus를 통과해야되기 때문에 global memory와 비교했을 때 상당한 latency가 추가된다. Global memory와 zero-copy memory 간의 성능 비교는 [vector_add_zerocopy.cu](/cuda/code/vector_add/vector_add_zerocopy.cu) 코드를 통해 확인할 수 있다. 아래 코드는 [vector_add_zerocopy.cu](/cuda/code/vector_add/vector_add_zerocopy.cu)의 일부분을 간단히 요약한 것이다.
 
 ```c++
 ...
@@ -306,7 +306,7 @@ UVA 이전에는 host memory를 참조하는 포인터와 device memory를 참�
 
 UVA에서 `cudaHostAlloc`를 통해 할당되는 pinned host memory는 동일한 host & device pointer를 갖게 된다. 즉, 이 API를 통해 할당받은 메모리의 주소를 커널 함수에 그대로 전달하여 device에서 사용할 수 있다는 것을 의미한다. [Zero-copy Memory](#zero-copy-memory)에서는 `cudaHostAlloc`으로 할당한 pinned host memory를 사용하려면 `cudaHostGetDevicePointer`를 사용하여 device pointer를 알아내야 했고, 이 포인터를 커널 함수에 전달했었다.
 
-따라서, UVA를 사용하면 할당한 pinned host memory를 device에서 사용하기 위해 device pointer를 얻는 과정이 필요없다. 즉, 아래와 같이 그냥 `cudaHostAlloc`으로 할당하여 얻은 메모리 주소를 그대로 커널 함수에 전달하여 사용할 수 있다. [vector_add_zerocopy.cu](/code/cuda/vector_add/vector_add_zerocopy.cu) 코드에서 `cudaHostGetDevicePointer`를 사용하는 부분을 제거하고, 커널 함수에 `h_a`와 `h_b`를 그대로 전달해주기만 하면 된다.
+따라서, UVA를 사용하면 할당한 pinned host memory를 device에서 사용하기 위해 device pointer를 얻는 과정이 필요없다. 즉, 아래와 같이 그냥 `cudaHostAlloc`으로 할당하여 얻은 메모리 주소를 그대로 커널 함수에 전달하여 사용할 수 있다. [vector_add_zerocopy.cu](/cuda/code/vector_add/vector_add_zerocopy.cu) 코드에서 `cudaHostGetDevicePointer`를 사용하는 부분을 제거하고, 커널 함수에 `h_a`와 `h_b`를 그대로 전달해주기만 하면 된다.
 ```c++
 ...
 // allocate zero-copy memory
@@ -355,7 +355,7 @@ cudaError_t cudaMallocManaged(void **devPtr, size_t size, unsigned int floags = 
 
 이렇게 할당된 managed memory는 `cudaFree`를 통해 해제한다.
 
-[vector_add_unified_memory.cu](/code/cuda/vector_add/vector_add_unified_memory.cu)에서 unified memory를 어떻게 사용하는지 살펴볼 수 있다. 아래 코드는 해당 코드의 일부분을 간략히 나타낸 것이다.
+[vector_add_unified_memory.cu](/cuda/code/vector_add/vector_add_unified_memory.cu)에서 unified memory를 어떻게 사용하는지 살펴볼 수 있다. 아래 코드는 해당 코드의 일부분을 간략히 나타낸 것이다.
 
 ```c++
 ...
@@ -388,7 +388,7 @@ cudaFree(um_c);
 
 코드를 살펴보면, `cudaMallocManaged`로 할당한 메모리의 주소는 host와 device 모두에서 동일한 포인터로 사용 가능하다. Host에서 사용되다가 device에서 사용되면, 시스템이 자동으로 data migration(HtoD)를 수행한다. 이를 통해서 코드를 더욱 간략하게 작성할 수 있으며 유지보수도 편하다.
 
-[vector_add_unified_memory.cu](/code/cuda/vector_add/vector_add_unified_memory.cu)를 컴파일하고, `nsight system`으로 프로그램을 프로파일링해보면 아래와 같은 출력을 얻을 수 있다.
+[vector_add_unified_memory.cu](/cuda/code/vector_add/vector_add_unified_memory.cu)를 컴파일하고, `nsight system`으로 프로그램을 프로파일링해보면 아래와 같은 출력을 얻을 수 있다.
 ```
 $ sudo nsys profile --stats=true ./vector_add_unified_memory
 ...
@@ -405,7 +405,7 @@ $ sudo nsys profile --stats=true ./vector_add_unified_memory
 
 Unified memory에서 발생하는 암시적인 memcpy을 확인할 수 있다.
 
-> [Matrix Addition with Unified Memory](/cuda-study/13_matrix_addition_with_unified_memory.md)에서 unified memory에 대해 조금 더 살펴볼 수 있다
+> [Matrix Addition with Unified Memory](/cuda/study/13_matrix_addition_with_unified_memory.md)에서 unified memory에 대해 조금 더 살펴볼 수 있다
 
 <br>
 
