@@ -176,3 +176,4 @@ GPU 00000000:09:00.0
 # References
 
 - Professional CUDA C Programming By John Cheng, Max Grossman, Ty Mckercher
+- [NVIDIA Ampere GA102 GPU Architecture](https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.pdf)

@@ -44,3 +44,4 @@ NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브�
   - [Layout of Shared Memory](/cuda/study/12-1_data_layout_of_shared_memory.md) (Square & Rectangular Shared Memory)
   - [Reducing Global Memory Access](/cuda/study/12-2_reducing_global_memory_access.md) (Example: Sum Reduction with Shared Memory)
   - [Coalescing Global Memory Accesses](/cuda/study/12-3_coalescing_global_memory_accesses.md) (Example: Matrix Transpose with Shared Memory)
+- [Constant Memory and Read-Only Cache](/cuda/study/13_constant_memory.md)
