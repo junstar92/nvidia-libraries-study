@@ -365,7 +365,7 @@ cudaError_t cudaStreamQuery(cudaStream_t stream);
 
 <br>
 
-> **Non-NULL 스트림** 에서의 자세한 동작 및 예제 코드는 [Concurrent Kernels in Non-NULL Streams](/cuda/study/14-1_concurrent_kernels_in_non_null_streams.md)에서 이어서 다루니, 이를 참조 바람.
+> **Non-NULL 스트림** 에서의 자세한 동작 및 예제 코드는 [Concurrent Kernel Execution](/cuda/study/14-1_concurrent_kernel_execution.md)에서 이어서 다루니, 이를 참조 바람.
 
 <br>
 
