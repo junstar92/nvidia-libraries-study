@@ -9,6 +9,7 @@
 #include <cuda_runtime.h>
 
 #define NUM_STREAMS 4
+#define N 100
 
 #define CUDA_ERROR_CHECK(err) \
     if (err != cudaError_t::cudaSuccess) { \
@@ -33,10 +34,13 @@ void vectorAddOnCPU(float const* a, float const* b, float* c, int const num_elem
 __global__
 void vectorAddOnGPU(float const* a, float const* b, float* c, int const num_elements)
 {
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
+    int idx = blockDim.x * blockIdx.x + threadIdx.x;
 
-    if (i < num_elements)
-        c[i] = a[i] + b[i];
+    if (idx < num_elements) {
+        for (int i = 0; i < N; i++) {
+            c[idx] = a[idx] + b[idx];
+        }
+    }
 }
 
 void checkResult(float const* host_ref, float const* gpu_ref, int const num_elements)
