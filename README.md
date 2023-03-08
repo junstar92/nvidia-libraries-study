@@ -49,3 +49,4 @@ NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브�
   - [Concurrent Kernel Execution](/cuda/study/14-1_concurrent_kernel_execution.md)
   - [Overlapping Kernel Execution and Data Transfer](/cuda/study/14-2_overlapping_kernel_execution_and_data_transfer.md)
   - [Stream Callback](/cuda/study/14-3_stream_callback.md)
+- [Introducing CUDA Events](/cuda/study/15_introducing_cuda_event.md)

@@ -195,7 +195,7 @@ for (int i = 0; i < num_streams; i++) {
 
 이상적으로는 스트림 간의 의도하지 않은 종속성은 없어야 한다. 하지만 복잡한 프로그램에서는 다른 스트림에서의 작업이 어떤 스트림이 수행되기 전에 완료될 필요가 있거나 그 결과가 필요할 때가 있다. 이러한 경우에는 스트림 간 종속성을 추가하는 것이 유용할 수 있다.
 
-스트림 간의 종속성은 **CUDA Event** 를 사용하여 추가할 수 있다. CUDA 이벤트를 사용하는 방법과 이에 관련한 내용은 [Introducing CUDA Event](15_introducing_cuda_event.md)에서 다루도록 한다.
+스트림 간의 종속성은 **CUDA Event** 를 사용하여 추가할 수 있다. CUDA 이벤트를 사용하는 방법과 이에 관련한 내용은 [Introducing CUDA Event](15_introducing_cuda_event.md#creating-inter-stream-dependencies)에서 다루도록 한다.
 
 
 <br>
