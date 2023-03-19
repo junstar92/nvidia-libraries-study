@@ -1,4 +1,4 @@
-NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브러리 공식 문서 분석 및 스터디 
+CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터디 
 
 - [References](#references)
 - [CUDA](#cuda)
@@ -24,7 +24,13 @@ NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브�
   - [Device Memory](/cuda/doc/01_programming_guide/03-03_device_memory.md)
   - Device Memory L2 Access Management
   - [Shared Memory](/cuda/doc/01_programming_guide/03-04_shared_memory.md) (Example: Matrix Multiplication with Shared Memory)
-  - [Asynchronous Concurrent Execution](/cuda/doc/01_programming_guide/03-08_asynchronous_concurrent_execution.md) (Streams)
+  - [Asynchronous Concurrent Execution](/cuda/doc/01_programming_guide/03-08_asynchronous_concurrent_execution.md) (CUDA Streams)
+    - Programmatic Dependent Launch and Synchronization
+    - CUDA Graphs
+    - [CUDA Events](/cuda/doc/01_programming_guide/03-08-03_cuda_events.md)
+    - Synchronous Calls
+  - Multi-Device System
+  - Unified Virtual Address Space
 
 
 ## CUDA Study
@@ -53,3 +59,4 @@ NVIDIA CUDA, cuDNN, TensorRT 등 NVIDIA 플랫폼에서 제공되는 라이브�
   - [Stream Callback](/cuda/study/14-3_stream_callback.md)
 - [Introducing CUDA Events](/cuda/study/15_introducing_cuda_event.md)
 - [Warp Shuffle Instruction](/cuda/study/16_warp_shuffle.md) (Example: Sum Reduction with Warp Shuffle Instruction)
+- [Precision Error of Floating-Point Number in CUDA](/cuda/study/17_precision_issues_in_cuda.md)

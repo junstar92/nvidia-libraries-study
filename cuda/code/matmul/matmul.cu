@@ -118,7 +118,8 @@ void checkResult(float const* host_ref, float const* gpu_ref, int const m, int c
         for (int c = 0; c < n; c++) {
             idx = n * r + c;
             if (fabsf(host_ref[idx] - gpu_ref[idx]) > eps) {
-                std::cout << std::setprecision(6) << "Result verification failed at (" << r << "," << c << ") host: " << host_ref[idx] << " gpu: " << gpu_ref[idx] << "\n";
+                std::cout << std::fixed << std::setprecision(6)
+                    << "Result verification failed at (" << r << "," << c << ") host: " << host_ref[idx] << " gpu: " << gpu_ref[idx] << "\n";
                 return;
             }
         }
