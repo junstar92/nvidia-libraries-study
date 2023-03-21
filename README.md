@@ -25,6 +25,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
     - [Device Memory](/cuda/doc/01_programming_guide/03-03_device_memory.md)
     - Device Memory L2 Access Management
     - [Shared Memory](/cuda/doc/01_programming_guide/03-04_shared_memory.md) (Example: Matrix Multiplication with Shared Memory)
+    - [Page-Locked Host Memory](/cuda/doc/01_programming_guide/03-06_page_locked_host_memory.md)
     - [Asynchronous Concurrent Execution](/cuda/doc/01_programming_guide/03-08_asynchronous_concurrent_execution.md) (CUDA Streams)
       - Programmatic Dependent Launch and Synchronization
       - CUDA Graphs
