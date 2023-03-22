@@ -15,6 +15,8 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 
 ## CUDA Documentations
 
+> CUDA 12.1 문서를 기준으로 작성됨
+
 ### Programming Guide
 
 - [Programming Guide Intro](/cuda/doc/01_programming_guide/01_intro.md)
@@ -33,7 +35,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
       - Synchronous Calls
     - Multi-Device System
     - [Unified Virtual Address Space](/cuda/doc/01_programming_guide/03-02-10_unified_virtual_address_space.md)
-  - Versioning and Compatibility (Versions of Driver API & Runtime API)
+  - [Versioning and Compatibility](/cuda/doc/01_programming_guide/03-03_versioning_and_compatibility.md) (호환성 관련 내용)
 - Hardware Implementation
 - Performance Guidelines
   - Maximize Utilization
