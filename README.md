@@ -22,17 +22,17 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - Programming Interface
   - Compilation with NVCC
   - [CUDA Runtime](/cuda/doc/01_programming_guide/03-02_cuda_runtime.md)
-    - [Device Memory](/cuda/doc/01_programming_guide/03-03_device_memory.md)
+    - [Device Memory](/cuda/doc/01_programming_guide/03-02-02_device_memory.md)
     - Device Memory L2 Access Management
-    - [Shared Memory](/cuda/doc/01_programming_guide/03-04_shared_memory.md) (Example: Matrix Multiplication with Shared Memory)
-    - [Page-Locked Host Memory](/cuda/doc/01_programming_guide/03-06_page_locked_host_memory.md)
-    - [Asynchronous Concurrent Execution](/cuda/doc/01_programming_guide/03-08_asynchronous_concurrent_execution.md) (CUDA Streams)
+    - [Shared Memory](/cuda/doc/01_programming_guide/03-02-04_shared_memory.md) (Example: Matrix Multiplication with Shared Memory)
+    - [Page-Locked Host Memory](/cuda/doc/01_programming_guide/03-02-06_page_locked_host_memory.md)
+    - [Asynchronous Concurrent Execution](/cuda/doc/01_programming_guide/03-02-08_asynchronous_concurrent_execution.md) (CUDA Streams)
       - Programmatic Dependent Launch and Synchronization
       - CUDA Graphs
-      - [CUDA Events](/cuda/doc/01_programming_guide/03-08-03_cuda_events.md)
+      - [CUDA Events](/cuda/doc/01_programming_guide/03-02-08-08_cuda_events.md)
       - Synchronous Calls
     - Multi-Device System
-    - [Unified Virtual Address Space](/cuda/doc/01_programming_guide/03-10_unified_virtual_address_space.md)
+    - [Unified Virtual Address Space](/cuda/doc/01_programming_guide/03-02-10_unified_virtual_address_space.md)
   - Versioning and Compatibility (Versions of Driver API & Runtime API)
 - Hardware Implementation
 - Performance Guidelines

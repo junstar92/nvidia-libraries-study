@@ -18,7 +18,7 @@ CUDA Runtime API에서는 page-locked(=pinned) host memory를 사용할 수 있�
 
 Page-locked host memory를 사용하면 아래의 이점들을 얻을 수 있다.
 
-1. Page-locked host memory와 device memory 간 데이터 복사는 kernel execution과 동시에 수행될 수 있다. 이에 대한 내용은 [Asynchronous Concurrent Execution](/cuda/doc/01_programming_guide/03-08_asynchronous_concurrent_execution.md)을 참조 바람.
+1. Page-locked host memory와 device memory 간 데이터 복사는 kernel execution과 동시에 수행될 수 있다. 이에 대한 내용은 [Asynchronous Concurrent Execution](/cuda/doc/01_programming_guide/03-02-08_asynchronous_concurrent_execution.md)을 참조 바람.
 2. 몇몇 device에서는 page-locked memory가 device address space에 매핑될 수 있다. 이를 통해 host와 device 간의 명시적인 copy를 제거할 수 있다 ([Mapped Memory](#mapped-memory) 참조).
 3. Front-side bus가 있는 시스템에서는 host memory가 page-locked로 할당되면 host memory와 device memory 간의 bandwidth가 높고, write-combining으로 할당되면 bandwidth가 더 높다고 한다 (무엇을 말하고자 하는지 파악 못함.. ㅠ).
 
