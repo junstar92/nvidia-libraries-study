@@ -40,8 +40,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - Performance Guidelines
   - [Maximize Utilization](/cuda/doc/01_programming_guide/03-05-02_maximize_utilization.md)
   - [Maximize Memory Throughput](/cuda/doc/01_programming_guide/03-05-03_maximize_memory_throughput.md)
-  - Maximize Instruction Throughput
-  - Minimize Memory Thrashing
+  - [Maximize Instruction Throughput](/cuda/doc/01_programming_guide/03-05-04_maximize_instruction_throughput.md)
 - C++ Language Extensions
 
 
