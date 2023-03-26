@@ -38,10 +38,11 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Versioning and Compatibility](/cuda/doc/01_programming_guide/03-03_versioning_and_compatibility.md) (호환성 관련 내용)
 - Hardware Implementation
 - Performance Guidelines
-  - [Maximize Utilization](/cuda/doc/01_programming_guide/03-05-02_maximize_utilization.md)
-  - [Maximize Memory Throughput](/cuda/doc/01_programming_guide/03-05-03_maximize_memory_throughput.md)
-  - [Maximize Instruction Throughput](/cuda/doc/01_programming_guide/03-05-04_maximize_instruction_throughput.md)
+  - [Maximize Utilization](/cuda/doc/01_programming_guide/05-02_maximize_utilization.md)
+  - [Maximize Memory Throughput](/cuda/doc/01_programming_guide/05-03_maximize_memory_throughput.md)
+  - [Maximize Instruction Throughput](/cuda/doc/01_programming_guide/05-04_maximize_instruction_throughput.md)
 - C++ Language Extensions
+  - [Function Execution Space Specifiers](/cuda/doc/01_programming_guide/07-01_function_execution_space_specifiers.md)
 
 
 ## CUDA Study
