@@ -201,3 +201,4 @@ Launch MyKernel<<< 5462,  768 >>>
 # References
 
 - [NVIDIA CUDA Documentations: Maximize Utilization](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#maximize-utilization)
+- CUDA Sample Code: [simpleOccupancy](https://github.com/NVIDIA/cuda-samples/tree/master/Samples/0_Introduction/simpleOccupancy)

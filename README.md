@@ -43,7 +43,12 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Maximize Instruction Throughput](/cuda/doc/01_programming_guide/05-04_maximize_instruction_throughput.md)
 - C++ Language Extensions
   - [Function Execution Space Specifiers](/cuda/doc/01_programming_guide/07-01_function_execution_space_specifiers.md)
-
+  - [Variable Memory Space Specifiers](/cuda/doc/01_programming_guide/07-02_variable_memory_space_specifiers.md)
+  - [Built-in Vector Types](/cuda/doc/01_programming_guide/07-03_04_builtin_types_vars.md#built-in-vector-types)
+  - [Built-in Variables](/cuda/doc/01_programming_guide/07-03_04_builtin_types_vars.md#built-in-variables)
+  - [Memory Fence Functions](/cuda/doc/01_programming_guide/07-05_06_memory_fence_and_syn_func.md#memory-fence-functions) (Example: Single-Pass Reduction)
+  - [Synchronization Functions](/cuda/doc/01_programming_guide/07-05_06_memory_fence_and_syn_func.md#synchronization-functions)
+  - Mathematical Functions
 
 ## CUDA Study
 
