@@ -48,7 +48,19 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Built-in Variables](/cuda/doc/01_programming_guide/07-03_04_builtin_types_vars.md#built-in-variables)
   - [Memory Fence Functions](/cuda/doc/01_programming_guide/07-05_06_memory_fence_and_syn_func.md#memory-fence-functions) (Example: Single-Pass Reduction)
   - [Synchronization Functions](/cuda/doc/01_programming_guide/07-05_06_memory_fence_and_syn_func.md#synchronization-functions)
-  - Mathematical Functions
+  - Texture Functions
+  - Surface Functions
+  - [Read-Only Data Cache Load Function](/cuda/doc/01_programming_guide/07-10_11_12_load_store_using_cache.md#read-only-data-cache-load-function)
+  - [Load Functions Using Cache Hints](/cuda/doc/01_programming_guide/07-10_11_12_load_store_using_cache.md#load-functions-using-cache-hints)
+  - [Store Functions Using Cache Hints](/cuda/doc/01_programming_guide/07-10_11_12_load_store_using_cache.md#store-functions-using-cache-hints)
+  - [Atomic Functions](/cuda/doc/01_programming_guide/07-14_atomic_functions.md)
+  - Alloca Function
+  - Warp Matrix Functions
+  - Launch Bounds
+  - #pragma unroll
+- Cooperative Groups
+- CUDA Dynamic Parallelism
+- Virtual Memory Management
 
 ## CUDA Study
 
@@ -62,7 +74,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - [Unrolling Loops](/cuda/study/08_unrolling_loops.md) (Example: Sum Reduction)
 - [CUDA Memory Model](/cuda/study/09_cuda_memory_model.md) (CUDA Memory Types Overview)
 - [Memory Management](/cuda/study/10_memory_management.md) (Pinned Memory / Zero-copy Memory / UVA / Unified Memory)
-  -  [Example: Matrix Addition with Unified Memory](/cuda/study/10-1_matrix_addition_with_unified_memory.md)
+  - [Example: Matrix Addition with Unified Memory](/cuda/study/10-1_matrix_addition_with_unified_memory.md)
 - [Global Memory Access Patterns](/cuda/study/11_memory_access_patterns.md)
   - [Example: Matrix Transpose](/cuda/study/11-1_matrix_transpose_problem.md)
 - [Introducing CUDA Shared Memory](/cuda/study/12_shared_memory.md) (Shared Memory Bank / Synchronization / Volatile Qualifier)
