@@ -1,17 +1,22 @@
 CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터디 
 
-- [References](#references)
 - [CUDA](#cuda)
+  - [References](#references)
   - [CUDA Documentations](#cuda-documentations)
     - [Programming Guide](#programming-guide)
+    - [Thrust](#thrust)
   - [CUDA Study](#cuda-study)
 
-# References
-
-- NVIDIA 공식 문서
-- Professional CUDA C Programming By John Cheng, Max Grossman, Ty Mckercher
-
 # CUDA
+
+## References
+
+- [NVIDIA CUDA Documentation](https://docs.nvidia.com/cuda/index.html)
+- Professional CUDA C Programming By John Cheng, Max Grossman, Ty Mckercher
+- [Github: thrust](https://github.com/NVIDIA/thrust)
+- [Thrust Documentation](https://nvidia.github.io/thrust/)
+- [Thrust Doxygen Documentation](https://thrust.github.io/doc/)
+- [Thrust Examples](https://github.com/NVIDIA/thrust/tree/master/examples)
 
 ## CUDA Documentations
 
@@ -61,6 +66,16 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - Cooperative Groups
 - CUDA Dynamic Parallelism
 - Virtual Memory Management
+
+### Thrust
+
+**Thrust**는 STL을 기반으로 CUDA용 C++ 템플릿 라이브러리이다. Thrust를 사용하면 CUDA C와 완벽하게 상호 호환이 가능하면서 최소한의 프로그래밍으로 고성능의 병렬 처리를 구현할 수 있다고 한다.
+
+이 라이브러리에는 복잡하게 구현된 parallel scan, sort, reduce 등의 다양한 기능을 제공하는데, 고수준의 추상화를 통해 thrust가 가장 효율이 좋은 구현을 자동으로 선택한다. 생산성이 중요한 프로토타입뿐만 아니라 견고함과 절대적인 성능이 중요한 어플리케이션에서 활용할 수 있다고 한다.
+
+- [Vectors](/cuda/doc/21_thrust/02_vectors.md)
+- [Algorithms](/cuda/doc/21_thrust/03_altorithms.md)
+- Fancy Iterators
 
 ## CUDA Study
 
