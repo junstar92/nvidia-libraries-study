@@ -50,7 +50,7 @@ Driver API의 버전은 driver header file의 `CUDA_VERSION`으로 정의된다.
 
 NVIDIA CUDA Toolkit은 개발자가 여러 시스템에서 NVIDIA GPU 가속 프로그램을 빌드할 수 있도록 한다. 여기에는 CUDA 런타임(cudart)와 다양한 CUDA 라이브러리와 tools을 포함하여 CUDA 컴파일러 툴체인이 포함되어 있다. GPU 가속 프로그램을 빌드하려면 CUDA toolkit install과 필요한 라이브러리들을 링크만 해주면 된다.
 
-이렇게 빌드한 프로그램을 실행하려면, 시스템에는 `CUDA enabled GPU`와 빌드된 프로그램에서 사용된 CUDA Toolkit과 호환되는 `NVIDIA display driver`가 필요하다. 만약 프로그램이 해당 라이브러리에 대해 dynamic linking으로 컴파일되었다면, 시스템에는 이러한 라이브러리와 맞는 버전이 존재해야 한다.
+이렇게 빌드한 프로그램을 실행하려면, 해당 시스템에는 `CUDA enabled GPU`와 빌드된 프로그램에서 사용된 CUDA Toolkit과 호환되는 `NVIDIA display driver`가 필요하다. 만약 프로그램이 해당 라이브러리에 대해 dynamic linking으로 컴파일되었다면, 시스템에는 이러한 라이브러리와 맞는 버전이 존재해야 한다.
 
 <img src="https://docs.nvidia.com/deploy/cuda-compatibility/graphics/CUDA-components.png" height=300px style="display: block; margin: 0 auto; background-color:white"/>
 
