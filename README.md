@@ -70,8 +70,10 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 
 ### Best Practices Guide
 
-- Performance Metrics
+- [Performance Metrics](/cuda/doc/02_best_practice_guide/08_performance_metrics.md)
 - Memory Optimizations
+  - [Data Transfer Between Host and Device](/cuda/doc/02_best_practice_guide/09-01_data_transfer_between_host_and_device.md)
+  - [Device Memory Spaces](/cuda/doc/02_best_practice_guide/09-02_device_memory_spaces.md)
 - Execution Configuration Optimizations
 - Instruction Optimization
 - Control Flow
