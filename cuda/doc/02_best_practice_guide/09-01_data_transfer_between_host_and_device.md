@@ -1,19 +1,12 @@
 # Table of Contents
 
 - [Table of Contents](#table-of-contents)
-- [Memory Optimizations](#memory-optimizations)
 - [Data Transfer Between Host and Device](#data-transfer-between-host-and-device)
   - [Pinned Memory](#pinned-memory)
   - [Asynchronous and Overlapping Trasfers with Computation](#asynchronous-and-overlapping-trasfers-with-computation)
   - [Zero Copy](#zero-copy)
   - [Unified Virtual Addressing](#unified-virtual-addressing)
 - [References](#references)
-
-<br>
-
-# Memory Optimizations
-
-메모리 최적화는 성능에서 가장 중요한 영역이다. 메모뢰 최적화의 목표는 bandwidth를 극대화하여 하드웨어의 최대한 사용하는 것이다. Bandwidth 측면에서는 가능한 빠른 메모리를 많이 사용하고 액세스가 느린 메모리를 덜 사용하는 것이 가장 좋다.
 
 <br>
 
