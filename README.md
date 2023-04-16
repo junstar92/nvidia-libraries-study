@@ -75,7 +75,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Data Transfer Between Host and Device](/cuda/doc/02_best_practice_guide/09-01_data_transfer_between_host_and_device.md)
   - [Device Memory Spaces](/cuda/doc/02_best_practice_guide/09-02_device_memory_spaces.md)
 - [Execution Configuration Optimizations](/cuda/doc/02_best_practice_guide/10_execution_configuration_optimizations.md)
-- Instruction Optimization
+- [Instruction Optimization](/cuda/doc/02_best_practice_guide/11_instruction_optimization.md)
 - Control Flow
 - Understanding the Programming Environment
 - CUDA Compatibility Developer's Guide
