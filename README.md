@@ -79,7 +79,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - [Control Flow](/cuda/doc/02_best_practice_guide/12_control_flow.md)
 - [Understanding the Programming Environment](/cuda/doc/02_best_practice_guide/14_understanding_the_programming_environment.md)
 - [CUDA Compatibility Developer's Guide](/cuda/doc/02_best_practice_guide/15_cuda_compatibility_developers_guide.md)
-- Preparing for Deployment
+- [Preparing for Deployment](/cuda/doc/02_best_practice_guide/16_preparing_for_deployment.md)
 
 ### Thrust
 
