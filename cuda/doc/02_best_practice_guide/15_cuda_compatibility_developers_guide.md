@@ -7,11 +7,6 @@
 - [CUDA Binary (cubin) Compatibility](#cuda-binary-cubin-compatibility)
 - [CUDA Compatibility Across Minor Releases](#cuda-compatibility-across-minor-releases)
   - [Existing CUDA Application within Minor Versions of CUDA](#existing-cuda-application-within-minor-versions-of-cuda)
-    - [Handling New CUDA Features and Driver APIs](#handling-new-cuda-features-and-driver-apis)
-    - [Using PTX](#using-ptx)
-    - [Dynamic Code Generation](#dynamic-code-generation)
-    - [Recommendations for building a minor-version compatible library](#recommendations-for-building-a-minor-version-compatible-library)
-    - [Recommendations for taking advantage of minor version compatibility in your application](#recommendations-for-taking-advantage-of-minor-version-compatibility-in-your-application)
 - [References](#references)
 
 <br>

@@ -2,17 +2,10 @@
 
 - [Table of Contents](#table-of-contents)
 - [Testing for CUDA Availability](#testing-for-cuda-availability)
-    - [Detecting a CUDA-Capable GPU](#detecting-a-cuda-capable-gpu)
-    - [Detecting Hardware and Software Configuration](#detecting-hardware-and-software-configuration)
 - [Error Handling](#error-handling)
 - [Building for Maximum Compatibility](#building-for-maximum-compatibility)
 - [Distributing the CUDA Runtime and Libraries](#distributing-the-cuda-runtime-and-libraries)
-    - [Statically-linked CUDA Runtime](#statically-linked-cuda-runtime)
-    - [Dynamically-linked CUDA Runtime](#dynamically-linked-cuda-runtime)
-    - [Other CUDA Libraries](#other-cuda-libraries)
   - [CUDA Toolkit Library Redistribution](#cuda-toolkit-library-redistribution)
-    - [Which Files to Redistribute](#which-files-to-redistribute)
-    - [Where to Install Redistributed CUDA Libraries](#where-to-install-redistributed-cuda-libraries)
 - [References](#references)
 
 <br>

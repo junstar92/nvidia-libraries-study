@@ -3,10 +3,9 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - [CUDA](#cuda)
   - [References](#references)
   - [CUDA Documentations](#cuda-documentations)
-    - [Programming Guide](#programming-guide)
-    - [Best Practices Guide](#best-practices-guide)
-    - [Thrust](#thrust)
-  - [CUDA Study](#cuda-study)
+  - [Study](#study)
+- [TensorRT](#tensorrt)
+  - [References](#references-1)
 
 # CUDA
 
@@ -91,7 +90,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - [Algorithms](/cuda/doc/21_thrust/03_altorithms.md)
 - Fancy Iterators
 
-## CUDA Study
+## Study
 
 - [Heterogeneous Computing](/cuda/study/01_heterogeneous_computing.md)
 - [CUDA Programming Model](/cuda/study/02_cuda_programming_model.md) (Example: Vector Addition)
@@ -118,3 +117,16 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - [Introducing CUDA Events](/cuda/study/15_introducing_cuda_event.md)
 - [Warp Shuffle Instruction](/cuda/study/16_warp_shuffle.md) (Example: Sum Reduction with Warp Shuffle Instruction)
 - [Precision Issues of Floating-Point Number in CUDA](/cuda/study/17_precision_issues_in_cuda.md)
+
+
+# TensorRT
+
+## References
+
+- [NVIDIA Deep Learning TensorRT Documentation](https://docs.nvidia.com/deeplearning/tensorrt)
+  - [Support Matrix](https://docs.nvidia.com/deeplearning/tensorrt/support-matrix/index.html?ncid=em-prod-790406) (for platform and software version compatibility)
+  - [Installation Guide](https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html?ncid=em-prod-790406)
+  - [Developer Guide](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html?ncid=em-prod-790406)
+  - [Sample Support Guide](https://docs.nvidia.com/deeplearning/tensorrt/sample-support-guide/index.html)
+- [Code Samples](https://github.com/NVIDIA/TensorRT/tree/main/samples)
+- [Introductory Webinar](https://developer.nvidia.com/blog/speeding-up-deep-learning-inference-using-tensorrt-updated/?ncid=em-prod-790406) : Learn more about TensorRT features and tools that simplify the inference workflow

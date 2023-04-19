@@ -4,13 +4,6 @@
 - [Maximize Memory Throughput](#maximize-memory-throughput)
   - [Data Transfer between Host and Device](#data-transfer-between-host-and-device)
   - [Device Memory Accesses](#device-memory-accesses)
-    - [Global Memory](#global-memory)
-    - [Size and Alignment Requirement](#size-and-alignment-requirement)
-    - [Two-Dimensional Arrays](#two-dimensional-arrays)
-    - [Local Memory](#local-memory)
-    - [Shared Memory](#shared-memory)
-    - [Constant Memory](#constant-memory)
-    - [Texture and Surface Memory](#texture-and-surface-memory)
 - [References](#references)
 
 <br>

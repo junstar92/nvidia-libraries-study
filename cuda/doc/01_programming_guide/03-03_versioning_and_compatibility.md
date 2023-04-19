@@ -5,12 +5,14 @@
 - [CUDA Compatibility](#cuda-compatibility)
   - [Why CUDA Compatibility](#why-cuda-compatibility)
   - [Minor Version Compatibility](#minor-version-compatibility)
-    - [CUDA 11 and Later Defaults to Minor Version Compatibility](#cuda-11-and-later-defaults-to-minor-version-compatibility)
-    - [Application Considerations for Minor Version Compatibility](#application-considerations-for-minor-version-compatibility)
-    - [Deployment Considerations for Minor Version Compatibility](#deployment-considerations-for-minor-version-compatibility)
   - [Forward Compatibility](#forward-compatibility)
-    - [Forward Compatibility Support Across Major Toolkit Versions](#forward-compatibility-support-across-major-toolkit-versions)
   - [Conclusion](#conclusion)
+- [Ampere GPU Architecture Compatibility](#ampere-gpu-architecture-compatibility)
+  - [Application Compatibility on the NVIDIA Ampere GPU Architecture](#application-compatibility-on-the-nvidia-ampere-gpu-architecture)
+  - [Verifying Ampere Compatibility for Existing Applications](#verifying-ampere-compatibility-for-existing-applications)
+  - [Building Application with the NVIDIA Ampere GPU Architecture Support](#building-application-with-the-nvidia-ampere-gpu-architecture-support)
+  - [Building Applications Using CUDA Toolkit 11.0](#building-applications-using-cuda-toolkit-110)
+  - [Independent Thread Scheduling Compatibility](#independent-thread-scheduling-compatibility)
 - [References](#references)
 
 <br>
@@ -186,8 +188,81 @@ CUDA Driver는 이전 버전의 toolkit으로 빌드된 어플리케이션을 �
 
 <br>
 
+# Ampere GPU Architecture Compatibility
+
+## Application Compatibility on the NVIDIA Ampere GPU Architecture
+
+CUDA 어플리케이션은 두 가지 형태로 컴파일된 GPU code를 포함할 수 있다. 하나는 binary cubin objets이고, 다른 하나는 각 커널에 대한 forward-compatible PTX assembly 이다. 두 형태 모두 특정 compute capability에 대해서 생성된다. 특정 compute capability에서 생성된 cubin은 해당 compute capability와 major revision은 동일하고 minor revision은 동일하거나 더 높은 어떤 GPU에서도 실행된다. 예를 들어, compute capability 7.0에서 생성된 cubin은 compute capability 7.5의 GPU에서 실행된다. 그러나 반대의 경우에는 실행이 불가능하다. 또한, compute capability 7.x에서 생성된 cubin은 compute capability 8.x에서도 실행될 수 없다.
+
+커널은 PTX 형태로도 컴파일될 수 있다. 어플리케이션 로드 시, PTX는 cubin으로 컴파일되고 cubin은 kernel execution에 사용된다. cubin과는 다르게, PTX는 forward-compatible이다. 즉, PTX는 해당 PTX를 생성할 때 가정했던 compute capability보다 높은 compute capability의 GPU에서 실행될 수 있다. 예를 들어, compute capability 7.x에서 생성된 PTX 코드는 compute capability 7.x 또는 더 높은 major 또는 minor revision, 즉, compute capability 8.x에서 실행될 수 있다. 그러므로, 비록 선택적이지만 forward-compatibility를 보장하기 위해 모든 어플리케이션이 커널의 PTX 코드를 포함하는 것을 권장한다.
+
+CUDA 어플리케이션이 GPU에서 커널을 실행할 때, CUDA Runtime은 시스템에 있는 GPU의 compute capability를 결정하고 이를 가장 잘 맞는 커널의 cubin 또는 PTX을 찾는데 사용한다. 만약 바이너리에서 해당 GPU와 호환되는 cubin이 존재한다면, cubin이 실행하는데 사용된다. 그렇지 않다면, CUDA Runtime은 먼저 JIT-compiling으로 PTX를 컴파일하여 cubin을 생성한다. 그런 다음 생성된 cubin이 실행하는데 사용된다. 만약 사용 가능한 cubin이나 PTX가 모두 없다면, kernel launch는 실패한다.
+
+커널의 PTX 버전을 포함하는 어플리케이션 바이너리는 Ampere 아키텍처 기반의 GPU에서 있는 그대로 동작해야 하며, 이런 경우에는 어플리케이션을 다시 빌드할 필요가 없다. 그러나 PTX를 포함하지 않는 어플리케이션 바이너리(cubin만 포함)는 Ampere 아키텍처 기반 GPU에서 실행되도록 다시 빌드해야 한다.
+
+## Verifying Ampere Compatibility for Existing Applications
+
+Ampere GPU 아키텍처와 호환되는 CUDA 어플리케이션을 만들기 위한 첫 번째 단계는 어플리케이션 바이너리에 이미 호환되는 GPU 코드(최소 PTX)가 포함되어 있는지 확인하는 것이다.
+
+> CUDA 10.2 또는 그 이전 버전의 Toolkit을 사용하는 경우는 문서를 참조 바람
+
+CUDA Toolkit 11.0 이상을 사용하여 빌드된 CUDA 어플리케이션은 native cubin (compute capability 8.0) 또는 PTX 형태, 또는 둘 다 포함하도록 빌드된 경우에는 문제없이 Ampere GPU 아키텍처와 호환된다.
+
+## Building Application with the NVIDIA Ampere GPU Architecture Support
+
+어플리케이션을 빌드하는데 사용된 CUDA Toolkit 버전에 따라, NVIDIA Ampere GPU 아키텍처에 대한 PTX와/또는 native cubin을 포함하도록 빌드할 수 있다. PTX만 포함해도 충분하지만, native cubin을 포함하면 아래의 장점들도 있다.
+
+- PTX만 있는 경우에 발생하는 JIT-compile 시간을 절약할 수 있다. Native cubins이 없는 모든 커널은 PTX에서 JIT-compile 된다. 여기에는 해당 커널이 어플리케이션에서 실행되지 않더라도 어플리케이션에 링크된 모든 라이브러리의 커널이 포함된다. 아주 큰 라이브러리를 사용하는 경우, JIT 컴파일에 걸리는 시간이 상당할 수 있다. CUDA Driver는 PTX JIT의 결과로 생성된 cubin을 캐싱하므로 대부분의 경우 일회성이지만 가능하면 피하는 것이 좋다.
+- PTX JIT로 컴파일된 커널은 최신 GPU 아키텍처의 기능을 활용할 수 없는 경우가 많다. 즉, native-compiled cubin이 더 빠르거나 더 좋은 정확도를 보여줄 수 있다.
+
+## Building Applications Using CUDA Toolkit 11.0
+
+> CUDA Toolkit 10.x 및 이전 버전에서의 빌드는 문서를 참조 바람
+
+CUDA Toolkit 11.0 버전에서 `nvcc`는 Ampere GPU 아키텍처(compute capability 8.0)에 대한 native cubin을 생성할 수 있다. CUDA Toolkit 11.0을 사용할 때, `nvcc`가 모든 최신 GPU 아키텍처에 대한 cubin 파일과 미래에 나올 GPU 아키텍처에 대한 forward compatibility를 위한 PTX를 모두 생성하도록 하려면 아래의 명령처럼 적절한 `-gencode=` 옵션을 지정하면 된다.
+
+- **Linux**
+
+```
+$ /usr/local/cuda/bin/nvcc
+-gencode=arch=compute_52,code=sm_52
+-gencode=arch=compute_60,code=sm_60
+-gencode=arch=compute_61,code=sm_61
+-gencode=arch=compute_70,code=sm_70
+-gencode=arch=compute_75,code=sm_75
+-gencode=arch=compute_80,code=sm_80
+-gencode=arch=compute_80,code=compute_80
+-O2 -o mykernel.o -c mykernel.cu
+```
+
+- **Windows**
+
+```
+$ nvcc.exe -ccbin "C:\vs2010\VC\bin"
+-Xcompiler "/EHsc /W3 /nologo /O2 /Zi /MT"
+-gencode=arch=compute_52,code=sm_52
+-gencode=arch=compute_60,code=sm_60
+-gencode=arch=compute_61,code=sm_61
+-gencode=arch=compute_70,code=sm_70
+-gencode=arch=compute_75,code=sm_75
+-gencode=arch=compute_80,code=sm_80
+-gencode=arch=compute_80,code=compute_80
+--compile -o "Release\mykernel.cu.obj" "mykernel.cu"
+```
+
+> `compute_XX`는 PTX 버전을 의미하고 `sm_XX`는 cubin 버전을 의미한다. `nvcc`에서 `-gencode=` 옵션의 `arch=`는 front-end 컴파일 타겟을 지정하며 항상 PTX 버전이어야 한다. `code=`는 back-end 컴파일 타겟을 지정하며 `cubin` 또는 `PTX`, 또는 둘 다일 수 있다. `code=`로 지정된 back-end 타겟 버전만 결과 바이너리에 유지된다. 향후 아키텍처와 호환성을 유지하려면 적어도 하나는 PTX이어야 한다.
+
+## Independent Thread Scheduling Compatibility
+
+최근 대부분 GPU는 적어도 Volta 아키텍처이므로 이 내용에 대해서 크게 신경쓸 필요는 없을 것 같다.
+
+> Volta 아티켁처 이후의 NVIDIA GPU는 warp의 스레드들 간에 Independent Thread Scheduling를 도입했으며, 이에 대한 내용은 문서나 [Compute Capability 7.x](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#independent-thread-scheduling)를 참조 바람.
+
+<br>
+
 # References
 
 - [NVIDIA CUDA Documentations: Versioning and Compatibility](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#versioning-and-compatibility)
 - [NVIDIA CUDA Documentations: CUDA Compatibility](https://docs.nvidia.com/deploy/cuda-compatibility/index.html)
 - [CUDA Toolkit and Minimum Required Driver Version for CUDA Minor Version Compatibility](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#id3) (CUDA Minor Version Compatibility Table)
+- [NVIDIA Ampere GPU Architecture Compatibility Guide for CUDA Applications](https://docs.nvidia.com/cuda/ampere-compatibility-guide/index.html)

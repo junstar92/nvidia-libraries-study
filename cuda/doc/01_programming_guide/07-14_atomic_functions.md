@@ -3,18 +3,7 @@
 - [Table of Contents](#table-of-contents)
 - [Atomic Functions](#atomic-functions)
   - [Arithmetic Functions](#arithmetic-functions)
-    - [atomicAdd()](#atomicadd)
-    - [atomicSub()](#atomicsub)
-    - [atomicExch()](#atomicexch)
-    - [atomicMin()](#atomicmin)
-    - [atomicMax()](#atomicmax)
-    - [atomicInc()](#atomicinc)
-    - [atomicDec()](#atomicdec)
-    - [atomicCAS()](#atomiccas)
   - [Bitwise Functions](#bitwise-functions)
-    - [atomicAnd()](#atomicand)
-    - [atomicOr()](#atomicor)
-    - [atomicXor()](#atomicxor)
 - [References](#references)
 
 <br>
