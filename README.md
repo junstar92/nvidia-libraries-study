@@ -4,8 +4,12 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [References](#references)
   - [CUDA Documentations](#cuda-documentations)
   - [Study](#study)
-- [TensorRT](#tensorrt)
+- [cuDNN](#cudnn)
   - [References](#references-1)
+  - [Developer Guide](#developer-guide)
+  - [Study](#study-1)
+- [TensorRT](#tensorrt)
+  - [References](#references-2)
 
 # CUDA
 
@@ -118,6 +122,29 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - [Warp Shuffle Instruction](/cuda/study/16_warp_shuffle.md) (Example: Sum Reduction with Warp Shuffle Instruction)
 - [Precision Issues of Floating-Point Number in CUDA](/cuda/study/17_precision_issues_in_cuda.md)
 
+# cuDNN
+
+## References
+
+- [NVIDIA cuDNN Documentation (latest)](https://docs.nvidia.com/deeplearning/cudnn/index.html)
+  - [Support Matrix](https://docs.nvidia.com/deeplearning/cudnn/support-matrix/index.html)
+  - [Installation Guide](https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html)
+  - [Developer Guide](https://docs.nvidia.com/deeplearning/cudnn/developer-guide/index.html)
+  - [API Reference](https://docs.nvidia.com/deeplearning/cudnn/api/index.html)
+- [NVIDIA cuDNN Documentation (v7.6.5)](https://docs.nvidia.com/deeplearning/cudnn/archives/cudnn_765/index.html)
+- [GTC 2020: cuDNN v8 New Advances](https://developer.nvidia.com/gtc/2020/video/s21685)
+- [Gihub: cudnn-frontend](https://github.com/NVIDIA/cudnn-frontend) : C++ header-only library that wraps the cuDNN [C backend API](https://docs.nvidia.com/deeplearning/cudnn/api/index.html#cudnn-backend-api)
+
+## Developer Guide
+
+> v8.9.0 Documentations 기준으로 작성됨
+
+- [Overview and Core Concepts](/cudnn/doc/01_developer_guide/01_02_overview_and_core_concepts.md)
+- Graph API
+- [Legacy API](/cudnn/doc/01_developer_guide/04_legacy_api.md)
+- [Odds and Ends](/cudnn/doc/01_developer_guide/05_odds_end_ends.md)
+
+## Study
 
 # TensorRT
 
