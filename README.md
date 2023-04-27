@@ -133,14 +133,14 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [API Reference](https://docs.nvidia.com/deeplearning/cudnn/api/index.html)
 - [NVIDIA cuDNN Documentation (v7.6.5)](https://docs.nvidia.com/deeplearning/cudnn/archives/cudnn_765/index.html)
 - [GTC 2020: cuDNN v8 New Advances](https://developer.nvidia.com/gtc/2020/video/s21685)
-- [Gihub: cudnn-frontend](https://github.com/NVIDIA/cudnn-frontend) : C++ header-only library that wraps the cuDNN [C backend API](https://docs.nvidia.com/deeplearning/cudnn/api/index.html#cudnn-backend-api)
+- [cudnn-frontend (github)](https://github.com/NVIDIA/cudnn-frontend) : C++ header-only library that wraps the cuDNN [C backend API](https://docs.nvidia.com/deeplearning/cudnn/api/index.html#cudnn-backend-api)
 
 ## Developer Guide
 
 > v8.9.0 Documentations 기준으로 작성됨
 
 - [Overview and Core Concepts](/cudnn/doc/01_developer_guide/01_02_overview_and_core_concepts.md)
-- Graph API
+- [Graph API](/cudnn/doc/01_developer_guide/03_graph_api.md)
 - [Legacy API](/cudnn/doc/01_developer_guide/04_legacy_api.md)
 - [Odds and Ends](/cudnn/doc/01_developer_guide/05_odds_end_ends.md)
 
