@@ -4,7 +4,8 @@
 - [CUDA Compatibility Developer's Guide](#cuda-compatibility-developers-guide)
 - [CUDA Tookit Versioning](#cuda-tookit-versioning)
 - [Source Compatibility](#source-compatibility)
-- [CUDA Binary (cubin) Compatibility](#cuda-binary-cubin-compatibility)
+- [Binary Compatibility](#binary-compatibility)
+  - [CUDA Binary (cubin) Compatibility](#cuda-binary-cubin-compatibility)
 - [CUDA Compatibility Across Minor Releases](#cuda-compatibility-across-minor-releases)
   - [Existing CUDA Application within Minor Versions of CUDA](#existing-cuda-application-within-minor-versions-of-cuda)
 - [References](#references)
@@ -62,6 +63,16 @@ CUDA는 다양한 호환성 방법을 제공한다.
 
 # Source Compatibility
 
+**Source Compatibility**(소스 호환성)는 라이브러리에서 제공하는 일련의 보장이며, 특정 버전의 라이브러리를 사용하여 빌드된 어플리케이션은 새로운 버전의 SDK가 설치되었을 때에도 에러없이 빌드 및 실행될 수 있다는 것을 의미한다.
+
+CUDA Driver와 CUDA Runtime은 다른 SDK 릴리즈 간에 소스 호환성을 제공하지 않는다. API는 폐기되거나 제거될 수 있다. 따라서, 이전 버전의 toolkit에서 성공적으로 컴파일된 어플리케이션이 새 버전의 toolkit에 대해 컴파일하려면 변경이 필요할 수 있다.
+
+개발자는 deprecation과 documentation 메커니즘을 통해 현재 또는 예정된 변경점들에 대해 공지받을 수 있다. 이는 이전 toolkit을 사용하여 컴파일된 어플리케이션 바이너리가 더 이상 지원되지 않는다는 것을 의미하는 것은 아니다. 어플리케이션 바이너리는 CUDA Driver API 인터페이스에 의존하며, CUDA Driver API 자체가 toolkit 버전 간에 변경되더라도 CUDA는 CUDA Driver API 인터페이스의 binary compatibility를 보장한다.
+
+<br>
+
+# Binary Compatibility
+
 라이브러리에서는 binary compatibility를 제공한다. 여기서 언급하는 라이브러리를 타겟팅하는 어플리케이션은 다른 버전의 해당 라이브러리를 동적으로 링킹될 때 동작한다.
 
 CUDA Driver API는 버저닝된 C-style ABI가 있어서 이전 드라이버(예를 들어, CUDA 3.2)에서 실행되는 어플리케이션이 최신 드라이버(예를 들어, CUDA 11.0)에서 여전히 잘 실행되고 동작하도록 보장한다. 즉, 어플리케이션 소스가 최신 CUDA Toolkit을 사용하기 위해서 다시 컴파일되어야 하는 경우가 있더라도, 시스템에 설치된 드라이버 컴포넌트를 새로운 버전으로 교체하면 기존의 어플리케이션과 해당 기능을 항상 지원할 수 있다.
@@ -114,7 +125,7 @@ Result = FAIL
 
 <br>
 
-# CUDA Binary (cubin) Compatibility
+## CUDA Binary (cubin) Compatibility
 
 CUDA의 GPU 아키텍처 간의 application binary compatibility 또한 중요하다.
 
