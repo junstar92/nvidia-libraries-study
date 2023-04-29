@@ -121,6 +121,9 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - [Introducing CUDA Events](/cuda/study/15_introducing_cuda_event.md)
 - [Warp Shuffle Instruction](/cuda/study/16_warp_shuffle.md) (Example: Sum Reduction with Warp Shuffle Instruction)
 - [Precision Issues of Floating-Point Number in CUDA](/cuda/study/17_precision_issues_in_cuda.md)
+- [Driver APIs와 Runtime APIs의 차이점](/cuda/study/18_difference_between_the_driver_and_runtime_apis.md)
+- [Runtime API 동기화 동작 분석](/cuda/study/19_api_synchronization_behavior.md)
+- [Stream 동기화 동작 분석]()
 
 # cuDNN
 
