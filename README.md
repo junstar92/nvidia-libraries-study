@@ -171,7 +171,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 
 - [Introduction](/tensorrt/doc/01_developer_guide/01_introduction.md)
 - [TensorRT's Capabilities](/tensorrt/doc/01_developer_guide/02_tensorrts_capabilities.md)
-- The C++ API
+- [The C++ API](/tensorrt/doc/01_developer_guide/03_the_cpp_api.md)
 - How TensorRT Works
 - Advanced Topics
 - Working with INT8
