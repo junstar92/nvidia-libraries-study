@@ -179,7 +179,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [About Compatibility](/tensorrt/doc/01_developer_guide/06-01_about_compatibility.md) (Version Compatibility, Hardware Compatibility, Compatibility Checks)
   - Refitting an Engine
   - Algorithm Selection and Reproducible Builds
-  - Creating a Network Definition from Scratch
+  - [Creating a Network Definition from Scratch](/tensorrt/doc/01_developer_guide/06-04_creating_a_network_definition_from_scratch.md)
   - Reduced Precision
   - I/O Formats
   - Explicit Versus Implicit Batch
