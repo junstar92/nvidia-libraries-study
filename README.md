@@ -169,11 +169,25 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 
 ## Developer Guide
 
+> v8.6.1 Documentation 기준으로 작성됨
+
 - [Introduction](/tensorrt/doc/01_developer_guide/01_introduction.md)
 - [TensorRT's Capabilities](/tensorrt/doc/01_developer_guide/02_tensorrts_capabilities.md)
 - [The C++ API](/tensorrt/doc/01_developer_guide/03_the_cpp_api.md)
 - [How TensorRT Works](/tensorrt/doc/01_developer_guide/05_how_tensorrt_works.md)
 - Advanced Topics
+  - [About Compatibility](/tensorrt/doc/01_developer_guide/06-01_about_compatibility.md) (Version Compatibility, Hardware Compatibility, Compatibility Checks)
+  - Refitting an Engine
+  - Algorithm Selection and Reproducible Builds
+  - Creating a Network Definition from Scratch
+  - Reduced Precision
+  - I/O Formats
+  - Explicit Versus Implicit Batch
+  - Sparsity
+  - Empty Tensors
+  - Reusing Input Buffers
+  - Engine Inspector
+  - Preview Features
 - Working with INT8
 - Working with Dynamic Shapes
 - Extending TensorRT with Custom Layers
