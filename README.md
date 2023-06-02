@@ -181,7 +181,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - Algorithm Selection and Reproducible Builds
   - [Creating a Network Definition from Scratch](/tensorrt/doc/01_developer_guide/06-04_creating_a_network_definition_from_scratch.md)
   - [Reduced Precision](/tensorrt/doc/01_developer_guide/06-05_reduced_precision.md)
-  - I/O Formats
+  - [I/O Formats](/tensorrt/doc/01_developer_guide/06-06_io_formats.md)
   - Explicit Versus Implicit Batch
   - Sparsity
   - Empty Tensors
