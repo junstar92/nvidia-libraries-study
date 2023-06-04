@@ -184,7 +184,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [I/O Formats](/tensorrt/doc/01_developer_guide/06-06_io_formats.md)
   - [Explicit Versus Implicit Batch](/tensorrt/doc/01_developer_guide/06-07_explicit_versus_implicit_batch.md)
   - [Sparsity](/tensorrt/doc/01_developer_guide/06-08_sparsity.md)
-  - Empty Tensors
+  - [Empty Tensors](/tensorrt/doc/01_developer_guide/06-09_empty_tensors.md)
   - Reusing Input Buffers
   - Engine Inspector
   - Preview Features
