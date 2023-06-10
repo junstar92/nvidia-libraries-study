@@ -16,6 +16,10 @@
 
 이번 섹션에서는 TensorRT C++ API의 기본적인 사용 방법에 대해서 다룬다. 여기서 사용되는 예제 코드는 [sampleOnnxMNIST](https://github.com/NVIDIA/TensorRT/tree/main/samples/sampleOnnxMNIST)를 기반이다.
 
+> 아래 포스팅에서 Network Definition API를 사용하는 것과 ONNX Parser를 사용하는 것에 대한 실제 구현을 살펴볼 수 있다.
+> - [MNIST Classification using Network Definition APIs](/tensorrt/study/01_mnist_cnn_api.md)
+> - [MNIST Classification using ONNX Parser APIs](/tensorrt/study/02_mnist_cnn_onnx.md)
+
 C++ API는 `NvInfer.h` 헤더 파일을 통해 액세스할 수 있고, 이 헤더의 네임스페이스는 `nvinfer1`이다.
 ```c++
 #include "NvInfer.h"

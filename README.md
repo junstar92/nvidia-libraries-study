@@ -11,6 +11,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - [TensorRT](#tensorrt)
   - [References](#references-2)
   - [Developer Guide](#developer-guide-1)
+  - [Study](#study-2)
 
 # CUDA
 
@@ -200,3 +201,8 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - Working with Conditions
 - Working with DLA
 - Performance Best Practices
+
+## Study
+
+- [Mnist CNN using TensorRT Network Definition APIs](/tensorrt/study/01_mnist_cnn_api.md)
+- [Mnist CNN using ONNX Parser APIs](/tensorrt/study/02_mnist_cnn_onnx.md)
