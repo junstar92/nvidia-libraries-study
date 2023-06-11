@@ -187,7 +187,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Sparsity](/tensorrt/doc/01_developer_guide/06-08_sparsity.md)
   - [Empty Tensors](/tensorrt/doc/01_developer_guide/06-09_empty_tensors.md)
   - Reusing Input Buffers
-  - Engine Inspector
+  - [Engine Inspector](/tensorrt/doc/01_developer_guide/06-11_engine_inspector.md)
   - Preview Features
 - Working with INT8
   - [Introduction to Quantization](/tensorrt/doc/01_developer_guide/07-01_introducing_to_quantization.md)
