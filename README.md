@@ -167,6 +167,10 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Sample Support Guide](https://docs.nvidia.com/deeplearning/tensorrt/sample-support-guide/index.html)
 - [Code Samples](https://github.com/NVIDIA/TensorRT/tree/main/samples)
 - [Introductory Webinar](https://developer.nvidia.com/blog/speeding-up-deep-learning-inference-using-tensorrt-updated/?ncid=em-prod-790406) : Learn more about TensorRT features and tools that simplify the inference workflow
+- ONNX-TensorRT
+  - [Github: pytorch-quantization](https://github.com/NVIDIA/TensorRT/tree/master/tools/pytorch-quantization)
+  - [pytorch-quantization documentation](https://docs.nvidia.com/deeplearning/tensorrt/pytorch-quantization-toolkit/docs/index.html)
+  - [PTQ, QAT Workflow](https://github.com/NVIDIA/TensorRT/blob/main/quickstart/quantization_tutorial/qat-ptq-workflow.ipynb)
 
 ## Developer Guide
 
@@ -192,7 +196,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - Working with INT8
   - [Introduction to Quantization](/tensorrt/doc/01_developer_guide/07-01_introducing_to_quantization.md)
   - [Setting Dynamic Range](/tensorrt/doc/01_developer_guide/07-02_setting_dynamic_range.md)
-  - Post-Training Quantization Using Calibration
+  - [Post-Training Quantization Using Calibration](/tensorrt/doc/01_developer_guide/07-03_post_training_quantization_using_calibration.md)
   - [Explicit Quantization](/tensorrt/doc/01_developer_guide/07-04_explicit_quantization.md)
   - [INT8 Rounding Modes](/tensorrt/doc/01_developer_guide/07-05_int8_rounding_modes.md)
 - Working with Dynamic Shapes
