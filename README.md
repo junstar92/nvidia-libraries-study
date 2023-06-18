@@ -199,7 +199,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Post-Training Quantization Using Calibration](/tensorrt/doc/01_developer_guide/07-03_post_training_quantization_using_calibration.md)
   - [Explicit Quantization](/tensorrt/doc/01_developer_guide/07-04_explicit_quantization.md)
   - [INT8 Rounding Modes](/tensorrt/doc/01_developer_guide/07-05_int8_rounding_modes.md)
-- Working with Dynamic Shapes
+- [Working with Dynamic Shapes](/tensorrt/doc/01_developer_guide/08_working_with_dynamic_shapes.md)
 - Extending TensorRT with Custom Layers
 - Working with Loops
 - Working with Conditions
