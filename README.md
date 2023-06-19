@@ -200,7 +200,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Explicit Quantization](/tensorrt/doc/01_developer_guide/07-04_explicit_quantization.md)
   - [INT8 Rounding Modes](/tensorrt/doc/01_developer_guide/07-05_int8_rounding_modes.md)
 - [Working with Dynamic Shapes](/tensorrt/doc/01_developer_guide/08_working_with_dynamic_shapes.md)
-- Extending TensorRT with Custom Layers
+- [Extending TensorRT with Custom Layers](/tensorrt/doc/01_developer_guide/09_extending_tensorrt_with_custom_layers.md)
 - Working with Loops
 - Working with Conditions
 - Working with DLA
