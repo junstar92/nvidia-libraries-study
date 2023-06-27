@@ -42,7 +42,7 @@ private:
             return "F";
         }
     }
-} gLogger(ILogger::Severity::kVERBOSE);
+} gLogger(ILogger::Severity::kERROR);
 
 void *conv1_weight, *conv1_bias, *conv2_weight, *conv2_bias, *fc_weight, *fc_bias;
 
@@ -88,12 +88,25 @@ int main(int argc, char** argv)
         IParser* parser = createParser(*network, gLogger);
 
         // parsing onnx file
-        parser->parseFromFile("mnist_cnn.onnx", static_cast<int32_t>(ILogger::Severity::kVERBOSE));
+        parser->parseFromFile("mnist_cnn_dynamic.onnx", static_cast<int32_t>(ILogger::Severity::kERROR));
 
         // build configuration
         IBuilderConfig* config = builder->createBuilderConfig();
         config->clearFlag(BuilderFlag::kTF32);
-        config->setFlag(BuilderFlag::kFP16);
+        // config->setFlag(BuilderFlag::kFP16);
+        config->setProfilingVerbosity(ProfilingVerbosity::kDETAILED);
+
+        // optimization profile
+        auto profiler = builder->createOptimizationProfile();
+        auto input_dims = network->getInput(0)->getDimensions();
+        input_dims.d[0] = 1;
+        profiler->setDimensions(network->getInput(0)->getName(), OptProfileSelector::kMIN, input_dims);
+        input_dims.d[0] = 10;
+        profiler->setDimensions(network->getInput(0)->getName(), OptProfileSelector::kOPT, input_dims);
+        input_dims.d[0] = 64;
+        profiler->setDimensions(network->getInput(0)->getName(), OptProfileSelector::kMAX, input_dims);
+
+        config->addOptimizationProfile(profiler);
         
         // build serialized network
         auto plan = builder->buildSerializedNetwork(*network, *config);
@@ -121,19 +134,25 @@ int main(int argc, char** argv)
     ICudaEngine* engine = runtime->deserializeCudaEngine(plan.data(), plan.size());
 
     // memory allocation for input, output
+    int32_t batch_size = 10;
     Dims input_dims = engine->getBindingDimensions(0);
     Dims output_dims = engine->getBindingDimensions(1);
+    printf("> input  dims: (%d, %d, %d, %d)\n", input_dims.d[0], input_dims.d[1], input_dims.d[2], input_dims.d[3]);
+    printf("> output dims: (%d, %d)\n", output_dims.d[0], output_dims.d[1]);
 
-    void *input, *output;
+    input_dims.d[0] = batch_size;
+    output_dims.d[0] = batch_size;
+
+    float *input, *output;
     void *d_input, *d_output;
 
-    size_t count = std::accumulate(input_dims.d, input_dims.d + input_dims.nbDims, 1, std::multiplies<>());
-    input = (void*)malloc(count * sizeof(float));
-    cudaMalloc(&d_input, count * sizeof(float));
+    size_t in_count = std::accumulate(input_dims.d, input_dims.d + input_dims.nbDims, 1, std::multiplies<>());
+    input = (float*)malloc(in_count * sizeof(float));
+    cudaMalloc(&d_input, in_count * sizeof(float));
 
-    count = std::accumulate(output_dims.d, output_dims.d + output_dims.nbDims, 1, std::multiplies<>());
-    output = (void*)malloc(count * sizeof(float));
-    cudaMalloc(&d_output, count * sizeof(float));
+    size_t out_count = std::accumulate(output_dims.d, output_dims.d + output_dims.nbDims, 1, std::multiplies<>());
+    output = (float*)malloc(out_count * sizeof(float));
+    cudaMalloc(&d_output, out_count * sizeof(float));
 
     cudaEvent_t start, stop;
     float msec = 0.f;
@@ -141,29 +160,38 @@ int main(int argc, char** argv)
     cudaEventCreate(&stop);
 
     IExecutionContext* context = engine->createExecutionContext();
-    void* const binding[] = {d_input, d_output};
-    for (int i = 0; i < 10; i++) {
-        // get input data
-        std::string filename = "digits/" + std::to_string(i) + ".bin";
-        loadBinary((void*)input, 28 * 28, filename.c_str());
-        show_digit((float*)input, 28, 28);
-        cudaMemcpy(d_input, input, sizeof(float) * 28 * 28, cudaMemcpyHostToDevice);
+    context->setTensorAddress(engine->getBindingName(0), d_input);
+    context->setTensorAddress(engine->getBindingName(1), d_output);
 
-        // inference
+    // copy mnist data from host to device
+    for (int i = 0; i < 10; i++) {
+        std::string filename = "digits/" + std::to_string(i) + ".bin";
+        loadBinary((void*)(input + i * 28 * 28), 28 * 28, filename.c_str());
+    }
+    cudaMemcpy(d_input, input, sizeof(float) * in_count, cudaMemcpyHostToDevice);
+
+    // inference
+    context->setBindingDimensions(0, input_dims);
+    if (!context->allInputShapesSpecified()) {
+        printf("> Input dimension is not specified\n");
+    }
+    else {
         cudaEventRecord(start);
-        context->executeV2(binding);
+        context->enqueueV3(nullptr);
         cudaEventRecord(stop);
         cudaEventSynchronize(stop);
         cudaEventElapsedTime(&msec, start, stop);
-
-        // extract output
-        cudaMemcpy(output, d_output, sizeof(float) * 10, cudaMemcpyDeviceToHost);
-        
-        auto iter = std::max_element((float*)output, (float*)output + 10);
-        int output_digit = std::distance((float*)output, iter);
-        std::cout << "Digit: " << output_digit << " (" << get_prob((float*)output, output_digit) << ")\n";
-        std::cout << "Elapsed Time: " << msec << " ms\n\n";
     }
+
+    // extract output
+    cudaMemcpy(output, d_output, sizeof(float) * out_count, cudaMemcpyDeviceToHost);
+    
+    for (int i = 0; i < 10; i++) {
+        auto iter = std::max_element((float*)(output + i * 10), (float*)(output + (i + 1) * 10));
+        int output_digit = std::distance((float*)(output + i * 10), iter);
+        std::cout << "Digit: " << output_digit << " (" << get_prob((float*)(output + i * 10), output_digit) << ")\n";
+    }
+    std::cout << "Elapsed Time: " << msec << " ms\n\n";
 
     // free memory & instances
     delete context;

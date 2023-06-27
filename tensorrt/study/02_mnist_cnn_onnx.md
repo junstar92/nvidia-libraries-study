@@ -157,4 +157,4 @@ Network Definition API를 사용할 때와 비슷한 시간(약 0,03 ms)이 걸�
 
 # References
 
-- [NVIDIA cuDNN Documentation: The C++ API](/tensorrt/doc/01_developer_guide/03_the_cpp_api.md)
+- [NVIDIA TensorRT Documentation: The C++ API](/tensorrt/doc/01_developer_guide/03_the_cpp_api.md)
