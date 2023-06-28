@@ -220,3 +220,5 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - [Mnist CNN using TensorRT Network Definition APIs](/tensorrt/study/01_mnist_cnn_api.md)
 - [Mnist CNN using ONNX Parser APIs](/tensorrt/study/02_mnist_cnn_onnx.md)
 - [Mnist CNN with Dynamic Shapes](/tensorrt/study/03_mnist_cnn_with_dynamic_shapes.md)
+- [TensorRT 8.5 업데이트 정리](/tensorrt/study/04_tensorrt_8_5_update.md)
+- [TensorRT 8.6 업데이트 정리](/tensorrt/study/05_tensorrt_8_6_update.md)
