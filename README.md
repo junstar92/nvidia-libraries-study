@@ -207,7 +207,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - Performance Best Practices
   - [Measuring Performances](/tensorrt/doc/01_developer_guide/13-01_measuring_performance.md)
   - Hardware/Software Environment for Performance Measurements
-  - Optimizing TensorRT Performance
+  - [Optimizing TensorRT Performance](/tensorrt/doc/01_developer_guide/13-03_optimizing_tensorrt_performance.md)
   - Optimizing Layer Performance
   - Optimizing Plugins
   - Optimizing Python Performance
