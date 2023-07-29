@@ -210,11 +210,11 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Optimizing TensorRT Performance](/tensorrt/doc/01_developer_guide/13-03_optimizing_tensorrt_performance.md)
   - [Optimizing Layer Performance](/tensorrt/doc/01_developer_guide/13-04_optimizing_layer_performance.md)
   - [Optimizing for Tensor Cores](/tensorrt/doc/01_developer_guide/13-05_optimizing_for_tensor_cores.md)
-  - Optimizing Plugins
+  - [Optimizing Plugins](/tensorrt/doc/01_developer_guide/13-06_optimizing_plugins.md)
   - Optimizing Python Performance
-  - Improving Model Accuracy
-  - Optimizing Builder Performance
-  - Builder Optimization Level
+  - [Improving Model Accuracy](/tensorrt/doc/01_developer_guide/13-08_improving_model_accuracy.md)
+  - [Optimizing Builder Performance](/tensorrt/doc/01_developer_guide/13-09_optimizing_builder_performance.md)
+  - [Builder Optimization Level](/tensorrt/doc/01_developer_guide/13-10_builder_optimization_level.md)
 
 ## Study
 
