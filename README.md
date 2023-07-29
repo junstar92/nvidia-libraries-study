@@ -183,7 +183,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - Advanced Topics
   - [About Compatibility](/tensorrt/doc/01_developer_guide/06-01_about_compatibility.md) (Version Compatibility, Hardware Compatibility, Compatibility Checks)
   - Refitting an Engine
-  - Algorithm Selection and Reproducible Builds
+  - [Algorithm Selection and Reproducible Builds](/tensorrt/doc/01_developer_guide/06-03_algorithm_selection_and_reproducible_builds.md)
   - [Creating a Network Definition from Scratch](/tensorrt/doc/01_developer_guide/06-04_creating_a_network_definition_from_scratch.md)
   - [Reduced Precision](/tensorrt/doc/01_developer_guide/06-05_reduced_precision.md)
   - [I/O Formats](/tensorrt/doc/01_developer_guide/06-06_io_formats.md)
@@ -215,6 +215,8 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Improving Model Accuracy](/tensorrt/doc/01_developer_guide/13-08_improving_model_accuracy.md)
   - [Optimizing Builder Performance](/tensorrt/doc/01_developer_guide/13-09_optimizing_builder_performance.md)
   - [Builder Optimization Level](/tensorrt/doc/01_developer_guide/13-10_builder_optimization_level.md)
+- Troubleshooting
+  - Understanding Formats Printed in Logs
 
 ## Study
 
