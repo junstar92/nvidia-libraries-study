@@ -216,7 +216,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Optimizing Builder Performance](/tensorrt/doc/01_developer_guide/13-09_optimizing_builder_performance.md)
   - [Builder Optimization Level](/tensorrt/doc/01_developer_guide/13-10_builder_optimization_level.md)
 - Troubleshooting
-  - Understanding Formats Printed in Logs
+  - [Understanding Formats Printed in Logs](/tensorrt/doc/01_developer_guide/13-10_builder_optimization_level.md)
 
 ## Study
 
