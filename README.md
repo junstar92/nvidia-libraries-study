@@ -66,7 +66,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Store Functions Using Cache Hints](/cuda/doc/01_programming_guide/07-10_11_12_load_store_using_cache.md#store-functions-using-cache-hints)
   - [Atomic Functions](/cuda/doc/01_programming_guide/07-14_atomic_functions.md)
   - Alloca Function
-  - Warp Matrix Functions
+  - [Warp Matrix Functions](/cuda/doc/01_programming_guide/07-24_warp_matrix_functions.md)
   - Launch Bounds
   - #pragma unroll
 - Cooperative Groups
@@ -126,6 +126,8 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - [Driver APIs와 Runtime APIs의 차이점](/cuda/study/18_difference_between_the_driver_and_runtime_apis.md)
 - [Runtime API 동기화 동작 분석](/cuda/study/19_api_synchronization_behavior.md)
 - [Stream 동기화 동작 분석](/cuda/study/20_stream_synchronization_behavior.md)
+- Tensor Cores
+  - [Overview of Tensor Cores](/cuda/study/21_overview_of_tensor_cores.md) (using `wmma`)
 
 # cuDNN
 
