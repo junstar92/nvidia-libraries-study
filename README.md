@@ -128,6 +128,7 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - [Stream 동기화 동작 분석](/cuda/study/20_stream_synchronization_behavior.md)
 - Tensor Cores
   - [Overview of Tensor Cores](/cuda/study/21_overview_of_tensor_cores.md) (using `wmma`)
+  - [A Layout of WMMA](/cuda/study/22_a_layout_of_wmma.md)
 
 # cuDNN
 
