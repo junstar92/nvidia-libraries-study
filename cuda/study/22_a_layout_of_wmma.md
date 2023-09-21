@@ -268,7 +268,7 @@ void mma_wmma_kernel(
 
 이렇게 구현한 코드로 컴파일 후, 실행한 결과는 다음과 같다.
 ```
-Maxtirx Sizes
+Matrix Size
 - M: 1024
 - N: 1024
 - K: 1024

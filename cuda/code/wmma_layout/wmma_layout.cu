@@ -258,7 +258,7 @@ int main(int argc, char** argv)
     uint32_t const size_m{1024};
     uint32_t const size_n{1024};
     uint32_t const size_k{1024};
-    std::cout << "Maxtirx Sizes\n";
+    std::cout << "Matrix Size\n";
     std::cout << "- M: " << size_m << std::endl
               << "- N: " << size_n << std::endl
               << "- K: " << size_k << std::endl;

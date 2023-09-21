@@ -188,7 +188,7 @@ Fragment B: 103 119 231 247 111 127 239 255 103 119 231 247 111 127 239 255
 
 행렬 D의 Fragment에 대해서 각 스레드에서의 출력을 첨부하지는 않았지만, 나머지 출력을 살펴보면 스레드 하나가 최종 행렬에서 8개의 요소를 담당한다는 것을 알 수 있다. 즉, 각 스레드들이 최종 계산된 값 중 8개씩 맡아서 메모리에 저장한다. 스레드 0이 담당하는 행렬 D의 요소의 좌표는 `(0,0), (0,1), (16,0), (16,1), (0,16), (0,17), (16,16), (16,17)` 이다.
 
-> [Dissecting the NVIDIA Volta GPU Architecture via Microbenchmarking](https://arxiv.org/pdf/1804.06826.pdf) 논문에서 언급하고 있는 행렬 A, B, C 요소들과 스레드 인덱스와의 매칭이 실제 출력해본 결과와 다른 것으로 보인다. 논문에서 사용한 CUDA 버전(9.0)이 너무 낮아서 지금과는 조금 다를 수도 있을 것 같다. 실제로 PTX 어셈블리를 분석해보면 논문에서 보여주는 명렬어와는 조금 다른 모양이다.
+> [Dissecting the NVIDIA Volta GPU Architecture via Microbenchmarking](https://arxiv.org/pdf/1804.06826.pdf) 논문에서 언급하고 있는 행렬 A, B, C 요소들과 스레드 인덱스와의 매칭이 실제 출력해본 결과와 다른 것으로 보인다. 논문에서 사용한 CUDA 버전(9.0)이 너무 낮아서 지금과는 조금 다를 수도 있을 것 같다. 실제로 PTX 어셈블리를 분석해보면 논문에서 보여주는 명령어와는 조금 다른 모양이다.
 
 ## Simple WMMA Example
 
@@ -297,7 +297,7 @@ void mma_wmma(T1 const* A, T1 const* B, T2* C, uint32_t m, uint32_t n, uint32_t 
 
 위 코드는 cpu matmul, cuda kernel matmul, wmma matmul을 각각 100번씩 실행하여 평균 실행 시간을 측정한다. 출력 결과는 다음과 같다.
 ```
-Maxtirx Sizes
+Matrix Size
 - M: 1024
 - N: 1024
 - K: 1024
