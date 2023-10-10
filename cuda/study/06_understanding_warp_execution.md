@@ -393,7 +393,7 @@ $ ./matrix_add 16 16
 사실 GPU(RTX3080) 성능이 꽤 좋은 편이라 속도 측면에서 눈에 띄는 차이점이 발견되지는 않는다. 하지만 아래 커맨드를 통해 nsight compute로 `achieved_occupancy`를 측정하면 스레드 블록 크기에 따라 어떤 차이가 있는지 관찰할 수 있다. **achieved occupancy**는 SM에서 지원하는 maximum warp 수 대비 cycle 당 평균 active warp의 비율을 의미한다. `<bx>`와 `<by>`에 각각 블록의 x,y 차원의 크기를 입력해준다.
 
 ```
-sudo ncu --metrics sm__warps_active.avg.pct_of_peak_sustained_active ./matrix_add <bx> <by>
+$ sudo ncu --metrics sm__warps_active.avg.pct_of_peak_sustained_active ./matrix_add <bx> <by>
 ```
 
 스레드 블록 크기 (32,32), (32,16), (16,32), (16,16) 순으로 출력 결과는 아래와 같다.

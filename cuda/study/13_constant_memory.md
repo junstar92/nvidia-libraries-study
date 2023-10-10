@@ -39,7 +39,7 @@ $$ \{x-4h, x-3h, x-2h, x-h, x, x+h, x+2h, x+3h, x+4h \} $$
 
 이를 여러 공식 및 알고리즘에 적용할 수 있지만, 여기서 중요한 점은 9개의 점을 입력으로 취하고 하나의 출력을 생성한다는 것만 이해하면 된다. 예제에서 CUDA로 구현할 공식은 아래와 같다.
 
-$$ f'(x) \approx a_1(f(x+h)-f(x-h)) + a_2(f(x+2h)-f(x-2h)) \\\\ + a_3(f(x+3h)-f(x-3h)) + a4(f(x+4h)-f(x-4h)) $$
+$$ f'(x) \approx a_1(f(x+h)-f(x-h)) + a_2(f(x+2h)-f(x-2h)) \\\\ + a_3(f(x+3h)-f(x-3h)) + a_4(f(x+4h)-f(x-4h)) $$
 
 위와 같은 stencil computation에서 constant memory는 공식의 계수인 `a1, a2, a3, a4`에 적용할 수 있다. 이 계수들은 모든 스레드에서 동일하게 사용되며, 절대 변경되지 않는다. 따라서, read-only이며 broadcast access 패턴이므로 constant memory를 사용하기 적합하다. Warp 내 스레드들은 모두 같은 시점에 동일한 constant memory 주소를 참조하게 된다.
 

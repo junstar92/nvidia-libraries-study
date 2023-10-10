@@ -79,7 +79,7 @@ Global, constant, texture memory는 서로 다른 용도에 최적화되어 있�
 
 Register 변수는 각 스레드에 private이다. 일반적으로 커널 내에서 자주 액세스되는 thread-private 변수에 사용된다. 이 변수는 커널과 lifetime이 같으며 커널 수행이 완료되면 액세스할 수 없다.
 
-Register는 SM의 active warp 간에 분배되는 매우 희소한 리소스이다. Ampere 아키텍처의 경우, 한 스레드에서 최대 255개의 register를 사용할 수 있다. 하지만 device qeury를 해보면([Device Query](/cuda/study/04_device_query.md) 참조), RTX3080의 경우에 한 블록에서 가능한 최대 register의 수는 65536개인데, 블록 당 최대 스레드 갯수가 1024개이다. 따라서, 스레드 블록에 1024개의 스레드가 있다면, 결과적으로 한 스레드에서 사용가능한 register의 수는 `65535 / 1024 = 64`개가 된다.
+Register는 SM의 active warp 간에 분배되는 매우 희소한 리소스이다. Ampere 아키텍처의 경우, 한 스레드에서 최대 255개의 register를 사용할 수 있다. 하지만 device query를 해보면([Device Query](/cuda/study/04_device_query.md) 참조), RTX3080의 경우에 한 블록에서 가능한 최대 register의 수는 65536개인데, 블록 당 최대 스레드 갯수가 1024개이다. 따라서, 스레드 블록에 1024개의 스레드가 있다면, 결과적으로 한 스레드에서 사용가능한 register의 수는 `65535 / 1024 = 64`개가 된다.
 
 커널에서 register를 덜 사용한다면 더 많은 스레드 블록이 SM에 상주할 수 있다. 즉, 더 많은 스레드 블록이 동시에 active될 수 있다는 것을 의미하고 occupancy와 성능이 향상된다.
 
@@ -181,7 +181,7 @@ Global memory는 device memory에 상주하며, 32-bytes, 64-bytes, 또는 128-b
 
 # GPU Caches
 
-CPU cache와 마찬가지고 GPU caches는 non-programmable memory 이다. GPU device에는 다음의 4가지 타입의 cache가 있다.
+CPU cache와 마찬가지로 GPU caches는 non-programmable memory 이다. GPU device에는 다음의 4가지 타입의 cache가 있다.
 
   - L1
   - L2

@@ -5,7 +5,7 @@
 - [Parallel Reduction with Shared Memory](#parallel-reduction-with-shared-memory)
 - [Parallel Reduction with Unrolling](#parallel-reduction-with-unrolling)
 - [Parallel Reduction with Dynamic Shared Memory](#parallel-reduction-with-dynamic-shared-memory)
-- [Effiective Bandwidth](#effiective-bandwidth)
+- [Effective Bandwidth](#effective-bandwidth)
 - [References](#references)
 
 <br>
@@ -429,7 +429,7 @@ reduceSmemUnrollDyn<<<grid.x / 4, block, DIM * sizeof(int)>>>(d_in, d_out, num_e
 
 > [Data Layout of Shared Memory](/cuda/study/12-1_data_layout_of_shared_memory.md)에서도 언급했지만, 동적으로 shared memory를 할당할 때와 정적으로 할당할 때의 성능 차이는 확인이 되지 않는다. 측정 시, 동적으로 할당할 때가 더 빠르게 측정될 때도 있다.
 
-# Effiective Bandwidth
+# Effective Bandwidth
 
 Reduction 커널은 memory bandwidth에 의해 제한되므로, reduction 커널을 평가하는 적절한 performance metric으로 `effective bandwidth`를 사용할 수 있다. Effective bandwidth는 커널이 완전히 수행되는 시간 동안 처리된 I/O의 크기로 계산할 수 있다. 식을 표현하면 다음과 같다.
 

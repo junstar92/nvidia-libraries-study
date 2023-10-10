@@ -189,7 +189,7 @@ RTX3080에서 위 코드는 다음과 같이 출력된다.
 
 <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcHoCL3%2Fbtr1dceF9TZ%2FGcH4UYg22KGtxYtJKWijrK%2Fimg.png" width=700px style="display: block; margin: 0 auto"/>
 
-위에서 언급했듯이 동일한 warp의 두 스레드가 동일한 주소에 액세스할 때는 bank conflict가 발생하지 않는다. 이러한 메모리 액세스가 read인 경우에는 word가 이를 요청한 스레드로 브로드캐스팅된다. 하지만 write인 경우에는 이 메모리를 요청한 스레드들 중 하나에서만 word에 write를 수행한다. 이때, 어떤 스레드가 write를 수행하는지는 정의되지 않는다.
+위에서 언급했듯이 동일한 warp에서 두 스레드가 동일한 주소에 액세스할 때는 bank conflict가 발생하지 않는다. 이러한 메모리 액세스가 read인 경우에는 word가 이를 요청한 스레드로 브로드캐스팅된다. 하지만 write인 경우에는 이 메모리를 요청한 스레드들 중 하나에서만 word에 write를 수행한다. 이때, 어떤 스레드가 write를 수행하는지는 정의되지 않는다.
 
 64-bit mode에서는 연속적인 64-bit words가 연속된 bank에 매핑된다. 각 뱅크는 64bits/clock의 bandwidth를 갖게 된다.
 
@@ -216,6 +216,8 @@ Warp내 두 스레드가 동일한 64-bit word 내 sub-word에 액세스하는 �
 <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcMDZKO%2Fbtr1lzNR1m8%2FjuHoC3NvvDzY71DIKvfVuk%2Fimg.png" width=400px style="display: block; margin: 0 auto"/>
 
 아래 그림은 three-way bank conflict를 보여준다. 3개의 스레드가 같은 bank에 액세스하고, 그 메모리 주소는 서로 다른 8-byte words에 속하고 있다는 것을 알 수 있다.
+
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fbl1B2A%2Fbtr1dmauAze%2FRuHocF3Po3cH5f9X0BFMZk%2Fimg.png" width=400px style="display: block; margin: 0 auto"/>
 
 ## Memory Padding
 

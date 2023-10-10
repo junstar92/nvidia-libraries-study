@@ -292,7 +292,7 @@ Done
 >
 > Mapped pinned memory는 host와 device 간에 공유되기 때문에 잠재적인 race condition이 발생할 수 있다. 따라서, 여러 스레드에서 동일한 메모리에 액세스하는 경우, 동기화가 필요하다.
 >
-> 또한, zero-copy memory는 high-latency를 가지므로 과도하게 사용하지 않도록 유의해야 한다.
+> 또한, zero-copy memory는 high-latency 특성을 가지므로 과도하게 사용하지 않도록 유의해야 한다.
 
 <br>
 
