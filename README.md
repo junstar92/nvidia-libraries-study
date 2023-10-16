@@ -67,6 +67,9 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - [Atomic Functions](/cuda/doc/01_programming_guide/07-14_atomic_functions.md)
   - Alloca Function
   - [Warp Matrix Functions](/cuda/doc/01_programming_guide/07-24_warp_matrix_functions.md)
+  - [Asynchronous Barrier](/cuda/doc/01_programming_guide/07-26_asynchronous_barrier.md)
+  - Asynchronous Data Copies
+  - Asynchronous Data Copies using `cuda::pipeline`
   - Launch Bounds
   - #pragma unroll
 - Cooperative Groups
