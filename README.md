@@ -18,8 +18,9 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 ## References
 
 - [NVIDIA CUDA Documentation](https://docs.nvidia.com/cuda/index.html)
+- [Github: CUDA C++ Core Libraries](https://github.com/NVIDIA/cccl/tree/main) (CCCL)
+- [NVIDIA C++ Standard Library Documentation](https://nvidia.github.io/libcudacxx/)
 - Professional CUDA C Programming By John Cheng, Max Grossman, Ty Mckercher
-- [Github: thrust](https://github.com/NVIDIA/thrust)
 - [Thrust Documentation](https://nvidia.github.io/thrust/)
 - [Thrust Doxygen Documentation](https://thrust.github.io/doc/)
 - [Thrust Examples](https://github.com/NVIDIA/thrust/tree/master/examples)
@@ -68,8 +69,8 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
   - Alloca Function
   - [Warp Matrix Functions](/cuda/doc/01_programming_guide/07-24_warp_matrix_functions.md)
   - [Asynchronous Barrier](/cuda/doc/01_programming_guide/07-26_asynchronous_barrier.md)
-  - Asynchronous Data Copies
-  - Asynchronous Data Copies using `cuda::pipeline`
+  - [Asynchronous Data Copies](/cuda/doc/01_programming_guide/07-27_asynchronous_data_copies.md)
+  - [Asynchronous Data Copies using `cuda::pipeline`](/cuda/doc/01_programming_guide/07-28_asynchronous_data_copies_using_cuda_pipeline.md)
   - Launch Bounds
   - #pragma unroll
 - Cooperative Groups
