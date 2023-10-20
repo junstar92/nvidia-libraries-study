@@ -133,6 +133,8 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 - Tensor Cores
   - [Overview of Tensor Cores](/cuda/study/21_overview_of_tensor_cores.md) (using `wmma`)
   - [A Layout of WMMA](/cuda/study/22_a_layout_of_wmma.md)
+- Matrix Multiplication Optimization
+  - [Optimize a Matrix Multiplication Kernel (SGEMM)](/cuda/study/23_optimizing_a_matmul_kernel.md)
 
 # cuDNN
 
