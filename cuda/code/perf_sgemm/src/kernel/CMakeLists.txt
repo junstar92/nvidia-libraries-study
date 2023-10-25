@@ -16,7 +16,7 @@ PRIVATE
     ${KERNEL_SRC_DIR}/06_warptiling_gemm.cu
 )
 
-target_compile_options(kernel PRIVATE "--ptxas-options=-v")
+target_compile_options(kernel PRIVATE "--ptxas-options=-v -O2")
 target_link_libraries(kernel
 PUBLIC
     CUDA::cublas

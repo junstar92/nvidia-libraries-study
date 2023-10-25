@@ -75,8 +75,8 @@ void Runner::init()
         Kernel("smem_2d_blocktiling_sgemm<64, 64, 8, 8>", sizes),
         Kernel("vectorize_sgemm<64, 64, 8, 8>", sizes),
         Kernel("vectorize_sgemm<128, 128, 8, 8>", sizes),
-        Kernel("warptiling_sgemm_kernel<64, 32, 32, 8, 4, 4>", sizes),
-        Kernel("warptiling_sgemm_kernel<256, 64, 64, 8, 4, 4>", sizes),
+        Kernel("warptiling_sgemm_kernel<64, 64, 8, 64, 32, 8>", sizes),
+        Kernel("warptiling_sgemm_kernel<128, 128, 8, 64, 32, 8>", sizes),
     };
     num_kernels = kernels.size();
 }
@@ -181,11 +181,11 @@ void Runner::run_kernels(int test_idx)
             break;
         
         case 7:
-            func = std::bind(warptiling_sgemm<64, 32, 32, 8, 4, 4>, M, N, K, alpha, d_A, d_B, beta, d_C, std::placeholders::_1);
+            func = std::bind(warptiling_sgemm<64, 64, 8, 64, 32, 8>, M, N, K, alpha, d_A, d_B, beta, d_C, std::placeholders::_1);
             break;
         
         case 8:
-            func = std::bind(warptiling_sgemm<256, 64, 64, 8, 4, 4>, M, N, K, alpha, d_A, d_B, beta, d_C, std::placeholders::_1);
+            func = std::bind(warptiling_sgemm<128, 128, 8, 64, 32, 8>, M, N, K, alpha, d_A, d_B, beta, d_C, std::placeholders::_1);
             break;
 
         default:

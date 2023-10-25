@@ -35,8 +35,7 @@ CUDA에서의 행렬 곱셈 최적화에 대해 잘 정리한 블로그를 발�
 |3|1D BlockTile SGEMM| 19.204 | 6.668 | 33.95% |
 |4|2D BlockTile SGEMM| 12.105 | 10.578 | 53.86% |
 |5|Vectorize SGEMM| 8.615 | 14.863 | 75.67% |
-|6|Warptiling SGEMM| 10.087 | 12.694 | 64.63% |
-|-|cuBLAS| 6.985 | 18.331 | 100% |
+|6|Warptiling SGEMM| 8.337 | 15.358 | 89.19% |
 
 전체 코드는 [link](/cuda/code/perf_sgemm)에서 확인할 수 있다.
 
@@ -682,7 +681,7 @@ void vectorize_sgemm_kernel<(int)64, (int)64, (int)8, (int)8, (int)8>(int, int, 
     ---------------------------------------------------------------------- -------------------
 ```
 
-> bank conflict를 해결하기 위해 shared memory에 PADDING을 추가했지만 오히려 bank conflict이 늘어났다. PADDING을 추가하는 것으로는 해결이 안되는 것 같아서 PADDING을 추가한 코드는 따로 첨부하지 않고, 아래의 warptiling을 활용하여 bank conflict가 해결되는지 확인해보자.
+> bank conflict를 해결하기 위해 shared memory에 PADDING을 추가했지만 오히려 bank conflict이 늘어났다. 이는 코드 상에서 shared memory에 액세스하는 패턴이 원인으로 보이며, 아래의 warp tiling 패턴으로 구현한 버전을 통해 bank conflict를 해결할 수 있는지 확인해보자.
 
 # Kernel 6: Warptiling
 
@@ -708,7 +707,36 @@ Warptiling이 추가된 계층 구조를 시각화하면 아래와 같다.
 
 <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FoMKR8%2FbtsyMdLDfEU%2Ff2lqiofavjjck8hxziUiQ0%2Fimg.png" height=350px style="display: block; margin: 0 auto; background-color:white"/>
 
-이를 코드로 표현하면 아래와 같이 나타낼 수 있다.
+각 계층 구조를 천천히 다시 한 번 살펴보자.
+
+먼저 결과 행렬 기준으로 행렬을 스레드 블록 단위로 구분한다. 그림으로 표현하면 아래와 같은데, 초록색으로 표시된 하나의 블록을 하나의 스레드 블록이 처리하게 된다. 이 구조에서 행렬 데이터는 global memory에 상주한다.
+
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FNftCQ%2FbtszekXex1B%2Fo2OGzvJgsFc4YzgE6qQ2Fk%2Fimg.png" height=500px style="display: block; margin: 0 auto; background-color:white"/>
+
+> 일반적으로 스레드 블록의 크기는 `64 x 64` 또는 `128 x 128`로 설정되며, 스레드 블록의 크기에 따라서 하나의 스레드 블록에 할당되는 스레드 갯수는 다르다.
+
+하나의 스레드 블록의 구조는 다음과 같다. 그리고, 하나의 스레드 블록이 처리하는 데이터는 global memory에서 shared memory로 복사한 다음, 이를 사용하여 계산하게 되는 것까지는 이전과 동일하다.
+
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FczO2Un%2Fbtsy9OS7Zq3%2FP0SskkcQ6rowVDoumbk2d0%2Fimg.png" height=500px style="display: block; margin: 0 auto; background-color:white"/>
+
+하지만 내부에서 연산을 분할하는 방법이 기존의 커널 구현과 다르다. 위 그림을 보면 하나의 스레드 블록이 `2 x 4`개의 블록으로 나누어진 것을 볼 수 있다. 이 세부 블록 하나가 바로 워프 하나가 담당하는 블록이 된다. 즉, 위 그림에서는 하나의 스레드 블록이 8개의 워프가 각각의 서브 블록 계산을 담당하게 된다. 하나의 워프에는 32개의 스레드가 있으므로, 위 그림의 경우에는 `32 x 8 = 256`개의 스레드가 하나의 스레드 블록에 속하게 된다.
+
+> Warp-level GEMM의 목적은 CUDA execution model 내에서 warp-level 병렬화에 매핑하기 위함이다. GPU 내 SM의 warp-scheduler에 의해서 워프 단위로 실행한다. 아래 구현에서는 CUDA core에 이슈(issue)된 thread-level의 행렬 연산을 구현했지만, 이러한 구조를 통해 Tensor core를 사용하도록 `mmm.sync` 또는 `wmma` 명령어를 사용할 수 있다.
+
+다음으로 하나의 워프 블록의 구조를 세부적으로 살펴보자.
+
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb2fUdt%2FbtszcFnhI6D%2FxojK2lDunggrBAAR6KscLK%2Fimg.png" height=500px style="display: block; margin: 0 auto; background-color:white"/>
+
+하나의 워프 블록 내부 구조는 위와 같다. 여기서 워프 블록은 `16 x 8`개의 서브 블록으로 나뉘며, 여기서 하나의 블록을 일반적으로 타일(tile)이라고 지칭한다. 그리고 하나의 타일은 `4 x 4` 행렬로 구성된다. 그림을 자세히 살펴보면, 하나의 워프 타일을 크게 4개로 분할한 것을 볼 수 있으며 분할된 블록들이 각각 `8 x 4`개의 타일로 이루어져 있는 것을 볼 수 있다. 그 이유는 워프 내 스레드의 갯수는 32개이고, 각 스레드가 `8 x 4`개의 타일 중 하나를 담당하여 계산하기 위함이다. 여기서 `8 x 4` 크기의 블록이 4개가 있는데, 32개의 스레드가 4개의 `8 x 4` 크기의 블록 계산을 담당하게 되며, 따라서, 하나의 스레드는 4개의 타일을 계산하게 된다.
+
+각 스레드가 처리하는 타일을 확대하면 다음과 같다.
+
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbFhWqx%2FbtszcIqJBxA%2FW8vApJmKoa5j5p7U5Kw4ok%2Fimg.png" height=500px style="display: block; margin: 0 auto; background-color:white"/>
+
+가장 낮은 수준의 블록이며 각 스레드가 특정 갯수의 요소를 처리하게 되는데, 위 경우에는 하나의 스레드가 `8 x 8 = 64`개의 요소를 계산하게 된다. 각 스레드가 계산에 사용하는 행렬 A, B의 요소는 shared memory로부터 레지스터로 이동된다. 각 스레드들은 서로 다른 스레드의 레지스터에 액세스할 수 없기 때문에 하나의 스레드에서 행렬 요소를 계산할 때 레지스터를 최대한 재사용할 수 있도록 2차원 구조의 타일을 사용하게 된다. 여기서는 shared memory에 상주하는 A 행렬의 8개의 요소와 B 행렬의 8개의 요소를 레지스터로 가져오고, 레지스터로 가져온 요소 값을 이용하여 16개의 외적(outer product)값을 누적하게 된다.
+
+
+위 과정을 코드로 표현하면 아래와 같이 나타낼 수 있다.
 ```c++
 // fragments used to store data fetched from SMEM
 float a_frag[THREAD_M];
@@ -752,23 +780,26 @@ for (int block_k = 0; block_k < k; block_k += BLOCK_K) {
 
 간의 동시성을 향상시키며, shared memory와 register의 memory locality의 이점을 활용한다.
 
-> 생각보다 구현이 까다롭고, [SGEMM](https://github.com/xldrx/maxas.wiki.fixed/raw/master/img/StoreShared128.png)에서 설명하는 것과 같이 여러 최적화 기법들을 적용해야 cuBLAS에 근접하는 성능을 얻을 수 있는 것으로 보인다. 최대한 비슷하게 구현했지만, vectorize를 적용한 것보다 오히려 성능이 떨어지는 경우도 발생하고 있다.
-> 
-> 이 구현에서 bank conflict를 해결하는 등의 최적화는 아직 적용하지 못했다. 이에 대한 내용은 다시 최적화 방법에 대해 살펴보고, 다른 포스팅으로 다시 보충하도록 할 예정이다.
-
-구현은 다음과 같다. 사용한 템플릿 파라미터는 아래와 같다.
-
-- `<32, 32, 8, 4, 4, 32, 16>`
-- `<64, 64, 8, 4, 4, 32, 16>`
+Warptiling을 활용한 SGEMM 커널의 구현은 다음과 같다.
 
 ```c++
-template<int BLOCK_M, int BLOCK_N, int BLOCK_K,
-        int THREAD_M, int THREAD_N,
-        int WARP_M, int WARP_N
->
+#define WARP_SIZE       32
+#define WARP_TILE_M     16
+#define WARP_TILE_N     8
+#define WARP_THREAD_M   8
+#define WARP_THREAD_N   4
+#define THREAD_TILE_M   8
+#define THREAD_TILE_N   8
+#define LANE_LAYOUT     2
+#define LANE_M          4
+#define LANE_N          4
+#define PADDING         4
+
+template<int NUM_THREADS, int BLOCK_M, int BLOCK_N, int BLOCK_K,
+    int WARP_M, int WARP_N, int WARP_K>
 __global__
 void warptiling_sgemm_kernel(
-    int const m, int const n, int const k,
+    int const M, int const N, int const K,
     float alpha,
     float const* A, float const* B,
     float beta,
@@ -777,94 +808,105 @@ void warptiling_sgemm_kernel(
 {
     cg::thread_block cta = cg::this_thread_block();
 
-    __shared__ float a_smem[BLOCK_K * BLOCK_M];
-    __shared__ float b_smem[BLOCK_K * BLOCK_N];
-    float a_frag[THREAD_M] = {0.f}, b_frag[THREAD_N] = {0.f}, acc[THREAD_M][THREAD_N] = {0.f};
+    int constexpr WARP_NUM_ROW = (BLOCK_M / WARP_M);
+    int constexpr WARP_NUM_COL = (BLOCK_N / WARP_N);
+    int const thread_idx = cta.thread_rank();
+    // threadblock-level indices
+    int const block_idx_m = cta.group_index().y;
+    int const block_idx_n = cta.group_index().x;
+    // warp-level indices of each thread
+    int const lane_idx = thread_idx % WARP_SIZE;
+    int const warp_idx = thread_idx / WARP_SIZE;
+    int const tb_warp_idx_m = warp_idx % (WARP_NUM_ROW);
+    int const tb_warp_idx_n = warp_idx / (WARP_NUM_ROW);
+    int const warp_tile_idx_m = ((lane_idx >> 3) << 1) + (lane_idx & 1);
+    int const warp_tile_idx_n = ((lane_idx & 7) >> 1);
+    int const tb_tile_idx_m = warp_tile_idx_m + tb_warp_idx_m * WARP_TILE_M;
+    int const tb_tile_idx_n = warp_tile_idx_n + tb_warp_idx_n * WARP_TILE_N;
 
-    // thread, block, warp, and lane identication
-    unsigned int const tid = cta.thread_rank();
-    unsigned int const bx = cta.group_index().x;
-    unsigned int const by = cta.group_index().y;
+    // set blocktile to beginning of A's row and B's column
+    A += block_idx_m * BLOCK_M * K;
+    B += block_idx_n * BLOCK_N;
 
-    // set blocktile to beginning of A's row, B's column, and C
-    A += by * BLOCK_M * k;
-    B += bx * BLOCK_N;
-    C += by * BLOCK_M * n + bx * BLOCK_N;
+    // allocate smem space for the threadblock
+    __shared__ float a_smem[BLOCK_K][BLOCK_M + PADDING];
+    __shared__ float b_smem[BLOCK_K][BLOCK_N];
 
-    // calculate the indices that this thread will load into SMEM
-    // - load 32 bytes => 4 elements per thread at each step
-    unsigned int const a_inner_row = tid / (BLOCK_K / 4);
-    unsigned int const a_inner_col = tid % (BLOCK_K / 4);
-    unsigned int const a_row_offset = cta.num_threads() / 2 / (BLOCK_K / 4);
-    unsigned int const b_inner_row = (tid - cta.num_threads() / 2) / (BLOCK_N / 4);
-    unsigned int const b_inner_col = (tid - cta.num_threads() / 2) % (BLOCK_N / 4);
-    unsigned int const b_row_offset = cta.num_threads() / 2 / (BLOCK_N / 4);
+    // allocate thread-local cache for results in register file
+    float accum[THREAD_TILE_M][THREAD_TILE_N] = {0.f,};
+    // register cache for As and Bs
+    float a_frag[THREAD_TILE_M] = {0.f,};
+    float b_frag[THREAD_TILE_N] = {0.f,};
 
-    unsigned int a_idx, b_idx;
-    if (cta.num_threads() == 64) {
-        a_idx = ((tid >> 1) & 7);
-        b_idx = (((tid & 0x30) >> 3) | (tid & 1));
-    }
-    else if (cta.num_threads() == 256) {
-        a_idx = (((tid & 128) >> 4) | ((tid >> 1) & 7));
-        b_idx = (((tid & 0x70) >> 3) | (tid & 1));
-    }
+    // element indices for writing smem from global memory
+    int const a_tb_idx_m = thread_idx / BLOCK_K;
+    int const a_tb_idx_k = thread_idx % BLOCK_K;
+    int const b_tb_idx_k = thread_idx / BLOCK_N;
+    int const b_tb_idx_n = thread_idx % BLOCK_N;
 
-    // GEMM main loop - iterates over the entire K dimensions - no unrolling
-    for (int block_k = 0; block_k < k; block_k += BLOCK_K) {
-        // load A and B matrics from global memory and store to SMEM
-        if (tid < cta.num_threads() / 2) {
-            #pragma unroll
-            for (unsigned int offset = 0; offset < BLOCK_M; offset += a_row_offset) {
-                float4 tmp = *(float4 const*)(&A[(a_inner_row + offset) * k + a_inner_col * 4]);
-                a_smem[(a_inner_col * 4 + 0) * BLOCK_M + a_inner_row + offset] = tmp.x;
-                a_smem[(a_inner_col * 4 + 1) * BLOCK_M + a_inner_row + offset] = tmp.y;
-                a_smem[(a_inner_col * 4 + 2) * BLOCK_M + a_inner_row + offset] = tmp.z;
-                a_smem[(a_inner_col * 4 + 3) * BLOCK_M + a_inner_row + offset] = tmp.w;
-            }
+    // GEMM main loop - iterates over the entire K dimension - no unrolling
+    for (unsigned int block_k = 0; block_k < K; block_k += BLOCK_K) {
+        // load A and B tiles from global memory and store to SMEM
+        #pragma unroll
+        for (int k = 0; k < (BLOCK_K * BLOCK_M / NUM_THREADS); k++) {
+            a_smem[a_tb_idx_k][k * (NUM_THREADS / BLOCK_K) + a_tb_idx_m] = A[(k * (NUM_THREADS / BLOCK_K) + a_tb_idx_m) * K + a_tb_idx_k];
         }
-        else {
-            #pragma unroll
-            for (unsigned int offset = 0; offset < BLOCK_K; offset += b_row_offset) {
-                *(float4*)(&b_smem[(b_inner_row + offset) * BLOCK_N + b_inner_col * 4]) =
-                    *(float4 const*)(&B[(b_inner_row + offset) * n + b_inner_col * 4]);
-            }
+        #pragma unroll
+        for (int k = 0; k < (BLOCK_K * BLOCK_N / NUM_THREADS); k++) {
+            b_smem[k * (NUM_THREADS / BLOCK_N) + b_tb_idx_k][b_tb_idx_n] = B[(k * (NUM_THREADS / BLOCK_N) + b_tb_idx_k) * N + b_tb_idx_n];
         }
         cta.sync();
 
         // advance blocktile
         A += BLOCK_K;
-        B += BLOCK_K * n;
+        B += BLOCK_K * N;
 
+        // warp tile structure - iterates over the thread block tile - fully unroll across BLOCK_K
         #pragma unroll
-        for (int warp_k = 0; warp_k < BLOCK_K; warp_k++) {
+        for (int warp_k = 0; warp_k < BLOCK_K; warp_k += (BLOCK_K / WARP_K)) {
             // fetch a_frag and b_frag from SMEM corresponding to k-index
-            *(float4*)(a_frag) = *(float4*)(&a_smem[warp_k * BLOCK_M + a_idx * 4]);
-            *(float4*)(b_frag) = *(float4*)(&b_smem[warp_k * BLOCK_N + b_idx * 4]);
-
             #pragma unroll
-            for (unsigned int i = 0; i < THREAD_M; i++) {
+            for (int m = 0; m < LANE_LAYOUT; m++) {
+                *reinterpret_cast<float4*>(&a_frag[m * LANE_M]) = 
+                    *reinterpret_cast<float4*>(&a_smem[warp_k][(tb_tile_idx_m + m * WARP_THREAD_M) * LANE_M]);
+            }
+            #pragma unroll
+            for (int n = 0; n < LANE_LAYOUT; n++) {
+                *reinterpret_cast<float4*>(&b_frag[n * LANE_N]) =
+                    *reinterpret_cast<float4*>(&b_smem[warp_k][(tb_tile_idx_n + n * WARP_THREAD_N) * LANE_N]);
+            }
+
+            // mma in thread tile structure
+            #pragma unroll
+            for (int m = 0; m < THREAD_TILE_M; m++) {
                 #pragma unroll
-                for (unsigned int j = 0; j < THREAD_N; j++) {
-                    acc[i][j] += a_frag[i] * b_frag[j];
+                for (int n = 0; n < THREAD_TILE_N; n++) {
+                    accum[m][n] += a_frag[m] * b_frag[n];
                 }
             }
         }
         cta.sync();
     }
-    
-    // write out results
-    unsigned int const c_row = a_idx * 4;
-    unsigned int const c_col = b_idx * 4;
+
+    // set warptile to beginning of C's row and column
+    C += (block_idx_m * BLOCK_M + tb_warp_idx_m * WARP_M) * N + block_idx_n * BLOCK_N + tb_warp_idx_n * WARP_N;
+    // write out the results
     #pragma unroll
-    for (unsigned int i = 0; i < THREAD_M; i++) {
+    for (int m = 0; m < LANE_LAYOUT; m++) {
         #pragma unroll
-        for (unsigned int j = 0; j < THREAD_N; j++) {
-            C[(c_row + i) * n + c_col + j] = alpha * acc[i][j] + beta * C[(c_row + i) * n + c_col + j];
+        for (int n = 0; n < LANE_LAYOUT; n++) {
+            #pragma unroll
+            for (int k = 0; k < LANE_M; k++) {
+                *reinterpret_cast<float4*>(&C[((warp_tile_idx_m + m * WARP_THREAD_M) * LANE_M + k) * N + (warp_tile_idx_n + n * WARP_THREAD_N) * LANE_N]) = 
+                    *reinterpret_cast<float4*>(&accum[m * LANE_M + k][n * LANE_N]);
+            }
         }
     }
 }
 ```
+
+이전 커널에 비해서 약간의 성능 향상을 달성한 것을 확인할 수 있다.
+
 
 # Results for Each Size
 
@@ -874,15 +916,15 @@ void warptiling_sgemm_kernel(
 - Results (ms)
                                       Size (M=N=K)     256     384     512     640     768     896    1024    1152    1280    1408    1536    1664    1792    1920    2048    2176    2304    2432    2560    2688    2816    2944    3072    3200    3328    3456    3584    3712    3840    3968    4096
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                                            cuBLAS   0.011   0.020   0.029   0.048   0.072   0.101   0.125   0.216   0.248   0.289   0.444   0.521   0.600   0.889   0.842   1.330   1.299   1.563   1.707   2.108   2.383   2.877   3.127   3.620   3.765   4.602   4.806   5.467   5.950   6.617   7.008
-                                       naive_sgemm   0.025   0.098   0.171   0.316   0.518   0.823   1.249   1.960   2.732   3.645   4.686   5.971   7.576   9.197  11.144  13.755  16.468  19.392  22.711  26.305  30.320  34.772  40.141  46.061  51.797  57.865  64.117  70.962  78.097  85.717  93.619
-                                        smem_sgemm   0.020   0.074   0.128   0.241   0.418   0.616   0.898   1.354   1.813   2.405   3.073   3.931   4.972   6.006   7.344   8.780  10.513  12.275  14.446  16.612  19.199  22.253  26.036  29.795  33.361  37.103  41.384  45.182  49.829  54.719  59.778
-           smem_1d_blocktiling_sgemm<64, 64, 8, 8>   0.030   0.043   0.056   0.106   0.190   0.225   0.316   0.456   0.604   0.863   1.088   1.334   1.685   2.102   2.540   2.962   3.609   4.234   4.879   5.603   6.527   7.595   8.578   9.851  10.999  12.226  13.720  15.078  16.446  18.225  20.110
-           smem_2d_blocktiling_sgemm<64, 64, 8, 8>   0.038   0.055   0.070   0.091   0.142   0.167   0.215   0.302   0.374   0.532   0.741   0.828   1.035   1.298   1.578   1.889   2.240   2.617   3.033   3.471   4.166   4.665   5.284   6.265   6.764   7.710   8.558   9.336  10.389  11.557  12.811
-                     vectorize_sgemm<64, 64, 8, 8>   0.033   0.047   0.061   0.083   0.105   0.134   0.174   0.229   0.282   0.407   0.594   0.671   0.798   0.984   1.205   1.476   1.726   2.005   2.336   2.713   3.197   3.628   4.135   4.750   5.265   5.934   6.596   7.197   7.989   8.861   9.742
-                   vectorize_sgemm<128, 128, 8, 8>   0.048   0.068   0.089   0.109   0.136   0.161   0.186   0.303   0.344   0.386   0.637   0.708   0.778   0.997   1.099   1.479   1.592   1.960   2.117   2.608   3.065   3.291   3.978   4.562   4.834   5.481   6.063   6.762   7.429   8.261   9.065
-      warptiling_sgemm_kernel<64, 32, 32, 8, 4, 4>   0.028   0.043   0.056   0.087   0.116   0.145   0.194   0.356   0.417   0.512   0.757   0.883   1.096   1.371   1.618   1.978   2.313   2.737   3.159   3.661   4.302   4.858   5.487   6.322   7.136   7.859   8.870   9.805  10.706  12.137  13.511
-     warptiling_sgemm_kernel<256, 64, 64, 8, 4, 4>   0.026   0.038   0.049   0.071   0.098   0.131   0.184   0.239   0.334   0.469   0.564   0.707   0.899   1.103   1.342   1.575   1.910   2.236   2.581   2.980   3.454   3.972   4.437   5.038   5.649   6.301   7.065   7.834   8.633   9.553  10.540
+                                            cuBLAS   0.011   0.020   0.026   0.044   0.073   0.099   0.121   0.207   0.234   0.279   0.435   0.506   0.596   0.873   0.830   1.320   1.258   1.554   1.668   2.088   2.340   2.844   3.099   3.521   3.729   4.580   4.802   5.515   6.047   6.654   6.960
+                                       naive_sgemm   0.025   0.098   0.152   0.284   0.519   0.814   1.240   1.921   2.707   3.613   4.656   5.905   7.488   9.108  11.024  13.583  16.320  19.224  22.526  26.051  30.021  34.511  39.286  44.906  51.475  57.795  64.310  71.266  78.464  86.010  93.919
+                                        smem_sgemm   0.020   0.074   0.114   0.226   0.414   0.606   0.892   1.336   1.801   2.396   3.071   3.911   4.945   6.002   7.349   8.762  10.502  12.250  14.442  16.592  19.129  21.889  24.956  28.981  33.319  36.937  41.469  45.712  50.173  55.263  60.330
+           smem_1d_blocktiling_sgemm<64, 64, 8, 8>   0.030   0.043   0.050   0.106   0.190   0.224   0.310   0.451   0.597   0.856   1.076   1.315   1.671   2.079   2.516   2.906   3.581   4.166   4.848   5.538   6.481   7.484   8.357   9.575  10.954  12.273  13.731  15.173  16.531  18.268  20.159
+           smem_2d_blocktiling_sgemm<64, 64, 8, 8>   0.038   0.055   0.063   0.092   0.141   0.165   0.212   0.302   0.370   0.521   0.730   0.809   1.016   1.264   1.553   1.859   2.200   2.563   2.963   3.393   4.091   4.641   5.196   6.047   6.743   7.647   8.597   9.319  10.376  11.555  12.778
+                  vectorize_sgemm<64, 64, 8, 8, 8>   0.033   0.047   0.054   0.083   0.104   0.132   0.171   0.225   0.281   0.402   0.587   0.665   0.795   0.965   1.201   1.456   1.705   1.982   2.314   2.666   3.163   3.589   4.002   4.653   5.191   5.888   6.581   7.206   8.007   8.884   9.749
+                vectorize_sgemm<128, 128, 8, 8, 8>   0.048   0.068   0.079   0.108   0.136   0.160   0.184   0.299   0.339   0.381   0.631   0.697   0.774   0.979   1.082   1.443   1.588   1.922   2.095   2.555   3.013   3.264   3.825   4.442   4.789   5.458   6.048   6.809   7.498   8.282   9.081
+     warptiling_sgemm_kernel<64, 64, 8, 64, 32, 8>   0.030   0.043   0.050   0.074   0.109   0.130   0.154   0.214   0.250   0.365   0.540   0.596   0.725   0.906   1.091   1.350   1.569   1.839   2.122   2.461   2.947   3.320   3.743   4.338   4.835   5.536   6.157   6.755   7.549   8.354   9.232
+   warptiling_sgemm_kernel<128, 128, 8, 64, 32, 8>   0.043   0.059   0.072   0.099   0.124   0.145   0.171   0.284   0.334   0.368   0.598   0.662   0.728   0.967   1.041   1.398   1.524   1.850   2.017   2.474   2.934   3.145   3.686   4.325   4.596   5.270   5.887   6.544   7.272   7.998   8.762
 ```
 
 

@@ -47,9 +47,7 @@ void vectorize_sgemm(
     cudaStream_t stream
 );
 
-template<int THREADS_PER_BLOCK, int BLOCK_M, int BLOCK_N, int BLOCK_K, int THREAD_M, int THREAD_N,
-    int WARP_M = 32, int WARP_N = 16
->
+template<int BLOCK_M, int BLOCK_N, int BLOCK_K, int WARP_M, int WARP_N, int WARP_K>
 void warptiling_sgemm(
     int const m, int const n, int const k,
     float const alpha,
