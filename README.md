@@ -102,41 +102,59 @@ CUDA, cuDNN, TensorRT 등 NVIDIA 라이브러리 공식 문서 분석 및 스터
 
 ## Study
 
-- [Heterogeneous Computing](/cuda/study/01_heterogeneous_computing.md)
-- [CUDA Programming Model](/cuda/study/02_cuda_programming_model.md) (Example: Vector Addition)
-- [Organizing Parallel Threads](/cuda/study/03_organizing_parallel_threads.md) (Example: Matrix Addition)
-- [Device Query](/cuda/study/04_device_query.md)
-- [CUDA Execution Model](/cuda/study/05_cuda_execution_model.md) (GPU Architecture Overview)
-- [Understanding Warp Execution and Warp Divergence](/cuda/study/06_understanding_warp_execution.md)
-- [Avoiding Branch Divergence](/cuda/study/07_avoiding_branch_divergence.md) (Example: Sum Reduction)
-- [Unrolling Loops](/cuda/study/08_unrolling_loops.md) (Example: Sum Reduction)
-- [CUDA Memory Model](/cuda/study/09_cuda_memory_model.md) (CUDA Memory Types Overview)
-- [Memory Management](/cuda/study/10_memory_management.md) (Pinned Memory / Zero-copy Memory / UVA / Unified Memory)
-  - [Example: Matrix Addition with Unified Memory](/cuda/study/10-1_matrix_addition_with_unified_memory.md)
-- [Global Memory Access Patterns](/cuda/study/11_memory_access_patterns.md)
-  - [Example: Matrix Transpose](/cuda/study/11-1_matrix_transpose_problem.md)
-- [Introducing CUDA Shared Memory](/cuda/study/12_shared_memory.md) (Shared Memory Bank / Synchronization / Volatile Qualifier)
+- Basic
+  - [Heterogeneous Computing](/cuda/study/01_heterogeneous_computing.md)
+  - [CUDA Programming Model](/cuda/study/02_cuda_programming_model.md) (Example: Vector Addition)
+  - [Organizing Parallel Threads](/cuda/study/03_organizing_parallel_threads.md) (Example: Matrix Addition)
+  - [Device Query](/cuda/study/04_device_query.md)
+  - [CUDA Execution Model](/cuda/study/05_cuda_execution_model.md) (GPU Architecture Overview)
+  - [Understanding Warp Execution and Warp Divergence](/cuda/study/06_understanding_warp_execution.md)
+  - [Avoiding Branch Divergence](/cuda/study/07_avoiding_branch_divergence.md) (Example: Sum Reduction)
+  - [Unrolling Loops](/cuda/study/08_unrolling_loops.md) (Example: Sum Reduction)
+  - [CUDA Memory Model](/cuda/study/09_cuda_memory_model.md) (CUDA Memory Types Overview)
+  - [Memory Management](/cuda/study/10_memory_management.md) (Pinned Memory / Zero-copy Memory / UVA / Unified Memory)
+    - [Example: Matrix Addition with Unified Memory](/cuda/study/10-1_matrix_addition_with_unified_memory.md)
+  - [Global Memory Access Patterns](/cuda/study/11_memory_access_patterns.md)
+    - [Example: Matrix Transpose](/cuda/study/11-1_matrix_transpose_problem.md)
+  - [Warp Shuffle Instruction](/cuda/study/16_warp_shuffle.md) (Example: Sum Reduction with Warp Shuffle Instruction)
+  - [Precision Issues of Floating-Point Number in CUDA](/cuda/study/17_precision_issues_in_cuda.md)
+  - [Driver APIs와 Runtime APIs의 차이점](/cuda/study/18_difference_between_the_driver_and_runtime_apis.md)
+  - [Runtime API 동기화 동작 분석](/cuda/study/19_api_synchronization_behavior.md)
+  
+- Shared Memory
+  - [Introducing CUDA Shared Memory](/cuda/study/12_shared_memory.md) (Shared Memory Bank / Synchronization / Volatile Qualifier)
   - [Layout of Shared Memory](/cuda/study/12-1_data_layout_of_shared_memory.md) (Square & Rectangular Shared Memory)
   - [Reducing Global Memory Access](/cuda/study/12-2_reducing_global_memory_access.md) (Example: Sum Reduction with Shared Memory)
   - [Coalescing Global Memory Accesses](/cuda/study/12-3_coalescing_global_memory_accesses.md) (Example: Matrix Transpose with Shared Memory)
-- [Constant Memory and Read-Only Cache](/cuda/study/13_constant_memory.md)
-- [Introducing CUDA Streams](/cuda/study/14_introducing_cuda_streams.md) (+ False Dependency, Hyper-Q)
+  
+- Constant Memory
+  - [Constant Memory and Read-Only Cache](/cuda/study/13_constant_memory.md)
+
+- CUDA Stream
+  - [Introducing CUDA Streams](/cuda/study/14_introducing_cuda_streams.md) (+ False Dependency, Hyper-Q)
   - [Concurrent Kernel Execution](/cuda/study/14-1_concurrent_kernel_execution.md)
   - [Overlapping Kernel Execution and Data Transfer](/cuda/study/14-2_overlapping_kernel_execution_and_data_transfer.md)
   - [Stream Callback](/cuda/study/14-3_stream_callback.md)
-- [Introducing CUDA Events](/cuda/study/15_introducing_cuda_event.md)
-- [Warp Shuffle Instruction](/cuda/study/16_warp_shuffle.md) (Example: Sum Reduction with Warp Shuffle Instruction)
-- [Precision Issues of Floating-Point Number in CUDA](/cuda/study/17_precision_issues_in_cuda.md)
-- [Driver APIs와 Runtime APIs의 차이점](/cuda/study/18_difference_between_the_driver_and_runtime_apis.md)
-- [Runtime API 동기화 동작 분석](/cuda/study/19_api_synchronization_behavior.md)
-- [Stream 동기화 동작 분석](/cuda/study/20_stream_synchronization_behavior.md)
+  - [Stream 동기화 동작 분석](/cuda/study/20_stream_synchronization_behavior.md)
+
+- CUDA Event
+  - [Introducing CUDA Events](/cuda/study/15_introducing_cuda_event.md)
+
+- Optimization Techniques
+  - [Register Cache: A Virtual Caching Layer for Threads in a Single Warp](/cuda/study/26_register_cache.md)
+  - [Threadblock Swizzling for Locality-Friendly CTA Identifiers](/cuda/study/27_threadblock_swizzling.md)
+
 - Tensor Cores
   - [Overview of Tensor Cores](/cuda/study/21_overview_of_tensor_cores.md) (using `wmma`)
   - [A Layout of WMMA](/cuda/study/22_a_layout_of_wmma.md)
+
 - Asynchronous Barrier
   - [Simple Two Vector Normalization](/cuda/study/25_simple_normalize_vector.md)
+
 - Matrix Multiplication Optimization
+  - [Efficient Matrix Multiplication Overview](/cuda/study/24_efficient_gemm_overview.md)
   - [Optimize a Matrix Multiplication Kernel (SGEMM)](/cuda/study/23_optimizing_a_matmul_kernel.md)
+  - [Matrix Multiplication Using Asynchronous Copy from Global Memory to Shared Memory]
 
 # cuDNN
 
