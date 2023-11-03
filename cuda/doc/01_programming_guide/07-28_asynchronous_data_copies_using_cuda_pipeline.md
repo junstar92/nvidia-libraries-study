@@ -22,7 +22,7 @@ CUDA에서는 데이터의 이동과 연산을 비동기로 관리하고 오버�
 
 # Single-Stage Asynchronous Data Copies using `cuda::pipeline`
 
-[Asynchronous Barrier](/cuda/doc/01_programming_guide/07-26_asynchronous_barrier.md)와 [Asynchronous](/cuda/doc/01_programming_guide/07-27_asynchronous_data_copies.md)에서 `cooperative_groups`와 `cuda::barrier`를 사용하여 비동기 데이터 전송을 하는 방법에 대해서 살펴볼 수 있었다. 이번에는 하나의 스테이지에서 `cuda::pipeline` API를 사용하여 비동기 복사를 스케쥴링하는 방법에 대해서 살펴본다. 이후에는 여러 스테이지를 사용하여 연산과 복사를 오버랩하는 방법을 살펴볼 예정이다.
+[Asynchronous Barrier](/cuda/doc/01_programming_guide/07-26_asynchronous_barrier.md)와 [Asynchronous](/cuda/doc/01_programming_guide/07-27_asynchronous_data_copies.md)에서 `cooperative_groups`와 `cuda::barrier`를 사용하여 비동기 데이터 전송을 하는 방법에 대해서 살펴볼 수 있었다. 이번에는 하나의 스테이지에서 `cuda::pipeline` API를 사용하여 비동기 복사를 스케쥴링하는 방법에 대해서 살펴본다. 이후에는 여러 스테이지를 사용하여 연산과 복사를 오버랩하는 방법을 살펴본다.
 
 예제 코드는 다음과 같다.
 ```c++
