@@ -10,7 +10,7 @@
 
 # Overlapping Kernel Execution and Data Transfer
 
-지난 포스팅인 [Introducing CUDA Stream](/cuda/study/14_introducing_cuda_streams.md)과 [Concurrent Kernel Execution](/cuda/study/14-1_concurrent_kernel_execution.md)에서 CUDA 스트림에 대한 기본 및 세부 사항들과 스트림을 사용하여 여러 커널들을 동시에 실행시키는 방법에 대해 살펴봤다. [Introducing CUDA Stream](/cuda/study/14_introducing_cuda_streams.md)에서 간단한 예제를 통해 살펴봤지만, 이번 포스팅에서는 kernel execution과 data transfer를 동시에 실행하는 방법에 대해서 살펴본다.
+지난 포스팅인 [Introducing CUDA Stream](/cuda/study/14_introducing_cuda_streams.md)과 [Concurrent Kernel Execution](/cuda/study/14-1_concurrent_kernel_execution.md)에서 CUDA 스트림에 대한 기본 및 세부 사항들과 스트림을 사용하여 여러 커널들을 동시에 실행시키는 방법에 대해 살펴봤다. [Introducing CUDA Stream](/cuda/study/14_introducing_cuda_streams.md)에서 간단한 예제를 통해 살펴봤는데, 이번 포스팅에서는 kernel execution과 data transfer를 동시에 실행하는 방법에 대해서 살펴본다.
 
 GPU에는 두 개의 **copy engine queue** 가 있다. 하나는 HtoD 방향으로의 전송용이고, 다른 하나는 DtoH 방향으로의 전송용이다. 따라서, 최대 2개의 data transfer를 오버랩할 수 있는데, 이는 두 data transfer의 방향이 서로 다르고, 서로 다른 스트림에서 수행되는 경우에만 가능하다. 이 조건이 만족되지 않으면 모든 data transfer는 순차적으로 수행된다.
 

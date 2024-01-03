@@ -245,3 +245,4 @@ Split K의 시나리오와 비슷하게, sliced-k도 `M`과 `N` 차원의 크기
 - [Register Cache: Catching for Warp-Centric CUDA Programs](https://developer.nvidia.com/blog/register-cache-warp-cuda/)
 - [Nvidia Tensor Core-CUDA HGEMM Advanced Optimization](https://bruce-lee-ly.medium.com/nvidia-tensor-core-cuda-hgemm-advanced-optimization-5a17eb77dd85)
 - [A Generalized Micro-kernel Abstraction for GPU Linear Algebra](https://www.cs.utexas.edu/users/flame/BLISRetreat2023/slides/Thakkar_BLISRetreat2023.pdf)
+- [Automatic Kernel Generation for Volta Tensor Cores](https://arxiv.org/pdf/2006.12645.pdf)
