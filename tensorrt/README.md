@@ -69,4 +69,6 @@
 - [Mnist CNN with Dynamic Shapes](/tensorrt/study/03_mnist_cnn_with_dynamic_shapes.md)
 - [TensorRT 8.5 업데이트 정리](/tensorrt/study/04_tensorrt_8_5_update.md)
 - [TensorRT 8.6 업데이트 정리](/tensorrt/study/05_tensorrt_8_6_update.md)
+- [TensorRT 9.X 업데이트 정리](/tensorrt/study/07_tensorrt_9_x_update.md)
+- [TensorRT 10.X 업데이트 정리](/tensorrt/study/08_tensorrt_10_x_update.md)
 - [Plugin Example 구현](/tensorrt/study/06_plugin.md)
