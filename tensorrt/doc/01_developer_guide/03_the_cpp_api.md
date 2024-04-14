@@ -57,14 +57,19 @@ IBuilder* builder = createInferBuilder(logger);
 
 ## Creating a Network Definition
 
-Builder가 생성되고 난 후, 모델을 최적화하기 위한 첫 번째 단계는 network definition을 생성하는 것이다.
+Builder가 생성되고 난 후, 모델을 최적화하기 위한 첫 번째 단계는 network definition을 생성하는 것이다. 네트워크의 creation option은 플래그들의 조합(OR)으로 지정된다.
+
+`kEXPLICIT_BATCH` 플래그는 ONNX parser를 사용하여 모델을 import하는 경우, 필수로 설정해주어야 한다. 이와 관련된 내용은 [Explicit Versus IMplicit Batch](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#explicit-implicit-batch)에서 살펴볼 수 있다.
+
+**[TensorRT 10.0]** 또한, `NetworkDefinitionCreationFlag::kSTRONGLY_TYPED` 플래그를 사용하여 strongly typed network를 생성하도록 할 수 있다. 자세한 내용은 [Strongly Typed Networks](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#strongly-typed-networks)에서 살펴볼 수 있다.
+
 ```c++
 uint32_t flag = 1U << static_cast<uint32_t>(NetworkDefinitionCreationFlag::kEXPLICIT_BATCH);
 
 INetworkDefinition* network = builder->createNetworkV2(flag);
 ```
 
-위 예제 코드에서 `kEXPLICIT_BATCH` 플래그는 ONNX parser를 사용하여 모델을 import하는 경우, 필수로 설정해주어야 한다. 이와 관련된 내용은 [Explicit Versus IMplicit Batch](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#explicit-implicit-batch)에서 살펴볼 수 있다.
+위 예제 코드에서  
 
 ## Importing a Model Using the ONNX Parser
 
@@ -104,8 +109,6 @@ IBuilderConfig* config = builder->createBuilderConfig();
 config->setMemoryPoolLimit(MemoryPoolType::kWORKSPACE, 1U << 20); // 1 MB
 ```
 
-<br>
-
 설정이 모두 지정되면, 아래의 API 호출을 통해 엔진을 빌드할 수 있다.
 ```c++
 IHostMemory* serializedModel = builder->buildSerializedNetwork(*network, *config);
@@ -126,11 +129,9 @@ delete serializedModel;
 
 > 빌드 과정을 통해 생성된 엔진은 직렬화된 데이터(serialized data)이다. 이러한 데이터를 TensorRT에서 플랜(Plan)이라고 부른다. 추론을 위해서는 플랜을 역직렬화하는 과정이 필요하다. 이는 바로 아래 섹션([Deserializing a Plan](#deserializing-a-plan))에서 다룬다.
 
-> Serialized Engine은 플랫폼이나 TensorRT 버전 간 호환되지 않는다. 엔진은 엔진이 빌드된 정확한 GPU 모델에 따라서도 다르다.
+> **[TensorRT 10.0]** Serialized Engine은 플랫폼<s>이나 TensorRT 버전</s> 간 호환되지 않는다. 엔진은 엔진이 빌드된 정확한 GPU 모델에 따라서도 다르다.
 
 > 엔진을 빌드하는 것은 offline process를 위한 것이므로 상당한 시간이 소요될 수 있다. 만약 빌드 시간을 단축하고 싶다면, [Optimizing Builder Performance](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#opt-builder-perf)를 참조하길 바란다.
-
-<br>
 
 # Deserializing a Plan
 
@@ -171,8 +172,6 @@ context->enqueueV3(stream);
 ```
 
 다만, 네트워크는 네트워크의 구조와 기능에 따라서 비동기식으로 실행될 수도 있고 아닐 수도 있다. 데이터의 종속성, DLA 사용 유무, loops 및 동기식으로 동작하는 plugins에 따라서 강제로 동기식으로 동작할 수 있다.
-
-<br>
 
 # References
 

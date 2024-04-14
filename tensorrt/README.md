@@ -18,7 +18,7 @@
 
 ## Developer Guide
 
-> v8.6.1 Documentation 기준으로 작성됨
+> v10.0.0 Documentation 기준으로 작성됨
 
 - [Introduction](/tensorrt/doc/01_developer_guide/01_introduction.md)
 - [TensorRT's Capabilities](/tensorrt/doc/01_developer_guide/02_tensorrts_capabilities.md)

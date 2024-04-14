@@ -23,8 +23,6 @@ TensorRT의 API는 클래스 기반이며, 몇몇 클래스는 다른 클래스�
 
 이러한 규칙의 예외는 builder로부터 엔진을 생성하는 경우이다. 엔진을 생성한 이후에는 builder, network, parser, build config를 제거해도 엔진을 계속 사용할 수 있다.
 
-<br>
-
 # Error Handling and Logging
 
 TensorRT의 top-level 인터페이스(builder, runtime or refitter)를 생성할 때, `Logger` 인터페이스의 구현을 반드시 제공해야 한다. 로거(logger)는 진단 및 정보들에 대한 메세지를 위해 사용되며, 출력 수준(verbosity level)은 제어 가능하다. TensorRT의 lifetime의 어느 시점에서든 정보를 전달하는데 사용될 수 있으므로, 로거의 수명은 어플리케이션에서 해당 인터페이스를 사용하는 모든 구간을 포함하고 있어야 한다. TensorRT가 내부적으로 worker threads를 사용할 수 있으므로, 로거의 구현은 thread-safe해야 한다.
@@ -71,18 +69,17 @@ Execution context에서 사용되는 영구 메모리와 임시 메모리의 크
 
 기본적으로 TensorRT는 CUDA로부터 직접 메모리를 할당한다. 그러나, TensorRT의 `IGpuAllocator`([c++](https://docs.nvidia.com/deeplearning/tensorrt/api/c_api/classnvinfer1_1_1_i_gpu_allocator.html)) 인터페이스 구현을 builder나 runtime에 제공하고 device memory를 직접 관리할 수 있다. 이는 TensorRT가 CUDA에서 직접 메모리를 할당하는 대신 어플리케이션이 모든 GPU 메모리를 제어하고 TensorRT에 suballocation하는 경우에 유용하다.
 
-TensorRT의 종속성(cuDNN, cuBLAS)은 많은 양의 device memory를 차지할 수 있다. TensorRT를 사용하면 builder configuration에서 `TacticSources` 속성을 사용하여 이러한 라이브러리들이 추론에서 사용되는지 여부를 제어할 수 있다. 일부 플러그인 구현에셔는 이러한 라이브러리가 꼭 필요하므로, 이 라이브러리들이 제외된다면 네트워크가 성공적으로 컴파일되지 않을 수 있다.
+**[TensorRT 10.0]** TensorRT의 종속성(cuDNN, cuBLAS)은 많은 양의 device memory를 차지할 수 있다. TensorRT를 사용하면 builder configuration에서 `TacticSources` 속성을 사용하여 이러한 라이브러리들이 추론에서 사용되는지 여부를 제어할 수 있다. 일부 플러그인 구현에셔는 이러한 라이브러리가 꼭 필요하므로, 이 라이브러리들이 제외된다면 네트워크가 성공적으로 컴파일되지 않을 수 있다.
 
 또한, `PreviewFeature::kDISABLE_EXTERNAL_TACTIC_SOURCES_FOR_CORE_0805`는 TensorRT core 라이브러리에서 cuDNN, cuBLAS 및 cuBLASLt의 사용을 제어하는데 사용된다. 이 플래그가 설정되면 TensorRT core 라이브러리는 `IBbuilderConfig::setTacticSources()`에 지정된 경우에도 이러한 tactic을 사용하지 않는다. 이 플래그는 적절한 tactic sources가 설정된 경우 `IPluginV2Ext::attachToContext()`를 사용하여 플러그인에 전달된 `cudnnContext` 및 `cublasContext` 핸들에 영향을 미치지 않는다. **이 플래그는 기본적으로 설정(set)된다.**
 
-CUDA infrastructure와 TensorRT의 device code도 device memory를 소비한다. 이 메모리 양은 플랫폼, GPU 및 TensorRT 버전에 따라 다르다. 이 메모리 크기는 `cudaGetMemInfo`를 사용하여 사용 중인 GPU 장치의 메모리 총량을 확인할 수 있다.
+CUDA infrastructure와 TensorRT의 device code도 device memory를 소비한다. 이 메모리 양은 플랫폼, GPU 및 TensorRT 버전에 따라 다르다. 이 메모리 크기는 `cudaGetMemInfo`를 사용하여 사용 중인 GPU 장치의 메모리 총량을 확인할 수 있다. `cudnnContext` 및 `cublasContext` 핸들은 플러그인에 적절한 tactic sources가 설정된 경우, `IPluginV2Ext::attachToContext()`를 사용하여 플러그인에 전달할 수 있다.
 
 TensorRT는 builder와 runtime에서 중요한 작업 전후에 사용 중인 메모리 양을 측정한다. 이러한 메모리 사용 통계는 로거(Logger)에 의해 출력된다. 예를 들면, 아래와 같이 출력된다.
 ```
 [MemUsageChange] Init CUDA: CPU +535, GPU +0, now: CPU 547, GPU 1293 (MiB)
 ```
 위 출력은 CUDA initialization에 의해서 변경되는 메모리 사용을 나타낸다. `CPU +535, GPU+0`은 CUDA initialization이 실행된 이후 증가된 메모리 양을 나타낸다. `now:` 이후의 내용은 CUDA initialization 이후의 CPU/GPU 메모리 사용량 스냅샷이다.
-
 
 ## CUDA Lazy Loading
 
@@ -95,8 +92,6 @@ NVIDIA Ampere와 이후의 아키텍처는 L2 cache persistence를 지원한다.
 캐시 할당(cache allocation)는 execution context별로 수행되며 컨텍스트의 `setPersistentCacheLimit` 메소드로 활성화된다. 모든 컨텍스트(및 이 기능을 사용하는 다른 컴포넌트)의 persistent cache 총 합은 `cudaDeviceProp::persistingL2CacheMaxSize`를 초과하면 안된다.
 
 > 이에 대한 내용은 CUDA 문서([link](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#l2-cache))에서 다루고 있다.
-
-<br>
 
 # Threading
 
@@ -113,7 +108,6 @@ Runtime concurrency model은 서로 다른 스레드가 서로 다른 execution 
 
 서로 다른 스레드에서 여러 builder를 사용하는 경우에는 thread-safe 문제가 없다. 그러나 builder는 timing을 사용하여 제공된 파라미터에서 가장 빠른 커널을 결정하므로, 동일한 GPU로 여러 builder를 사용하면 최적의 엔진을 구성하는 timing과 TensorRT의 기능이 방해받는다. 서로 다른 GPU로 빌드하려고 여러 스레드를 사용하는 것은 문제되지 않는다.
 
-<br>
 
 # Determinism
 
@@ -129,7 +123,9 @@ TensorRT의 builder는 timing을 사용하여 주어진 연산을 구현하는 �
 
 `RANDOM_UNIFORM` 또는 `RANDOM_NORMAL` 연산을 사용하는 `IFillLayer`를 네트워크에 추가하면, 더 이상 determinism이 보장되지 않는다. 각 호출마다 이러한 연산은 RNG 상태를 기반의 텐서를 생성하고, RNG 상태를 업데이트한다. 이 상태는 execution context별로 저장된다.
 
-<br>
+## [TensorRT 10.0] IScatterLayer Determinism
+
+네트워크에 `IScatterLayer`가 있고, input tensor indices에 중복된 항목이 있는 경우, `ScatterMode::kELEMENT`와 `ScatterMode::kND` 모드에서 determinism이 보장되지 않는다. 또한, 입력 값 중 하나가 임의로 선택된다.
 
 # Runtime Options
 
@@ -147,8 +143,6 @@ Lean runtime은 dispatch runtime의 모든 기능들을 포함한다. 그리고,
 > - `tensorrt` - It is the Python interface for the _default_ runtime.
 > - `tensorrt_lean` - It is the Python interface for the _lean_ runtime.
 > - `tensorrt_dispatch` - It is the Python interface for the _dispatch_ runtime.
-
-<br>
 
 # Compatibility
 

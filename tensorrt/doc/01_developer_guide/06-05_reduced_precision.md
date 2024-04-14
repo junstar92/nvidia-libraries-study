@@ -4,6 +4,7 @@
 - [Network-Level Control of Precision](#network-level-control-of-precision)
 - [Layer-Level Control of Precision](#layer-level-control-of-precision)
 - [TF32](#tf32)
+- [BF16](#tensorrt-100-bf16)
 - [References](#references)
 
 <br>
@@ -29,8 +30,6 @@ config->setFlag(BuilderFlag::kFP16);
 `FP16`와 `TF32` 정밀도를 사용하는 것은 비교적 간단하다. 하지만, `INT8` 정밀도를 사용할 때는 조금 복잡하다. INT8 정밀도를 사용하는 방법은 [Working with INT8](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#working-with-int8)에서 자세히 설명한다.
 
 > 주의해야 할 점은 비록 precision 플래그가 활성화되더라도, 엔진에 바인딩되는 input/output 텐서는 기본적으로 FP32이다. Input/output 텐서의 정밀도와 연산의 정밀도는 별도로 생각해야 하며, 텐서의 정밀도는 따로 설정해주어야 한다. 바인딩되는 input/output 텐서의 data type과 format을 설정하는 방법은 [I/O Formats](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#reformat-free-network-tensors)에서 자세히 설명한다.
-
-<br>
 
 # Layer-Level Control of Precision
 
@@ -69,8 +68,6 @@ config->setFlag(BuiderFlag::kOBEY_PRECISION_CONSTRAINTS);
 
 `ITensor::setType()` API는 네트워크의 input/output 텐서 중 하나가 아니라면 텐서의 정밀도 제약을 설정하지 않는다. 또한, `layer->setOutputType()`과 `layer->getOutput(i)->setType()` 간에는 차이점이 있다. 전자는 레이어에서 TensorRT가 선택하는 구현을 제약하는 optional type이며, 후자는 네트워크의 input/output의 타입을 지정하며 네트워크의 input/output이 아니라면 무시된다 (단순히 제약이 아닌 input/output 텐서 자체의 타입이라고 이해하면 된다). 만약 두 API에서 설정한 타입이 다르다면(네트워크의 input/output이면서), TensorRT는 두 스펙을 모두 준수하도록 캐스트(cast)를 삽입한다. 그러므로 만약 네트워크의 output을 생성하는 레이어에서 `setOutputType()`을 호출한다면, 일반적으로 대응하는 네트워크 output을 동일한 타입으로 설정해야 한다.
 
-<br>
-
 # TF32
 
 기본적으로 TensorRT는 TF32 Tensor Cores를 사용한다. Convolution 또는 행렬 곱셈과 같은 내적을 계산할 때, TF32는 아래의 내용들을 실행한다.
@@ -94,7 +91,13 @@ config->clearFlag(BuilderFlag::kTF32);
 
 > 어플리케이션에서 TF32의 dynamic range보다 더 높은 dynamic range를 요구하지 않는 한, FP16의 성능이 항상 더 빠르므로 FP16이 더 좋은 솔루션이 될 수 있다.
 
-<br>
+# [TensorRT 10.0] BF16
+
+NVIDIA Ampere과 이후 아키텍처에서 `bfloat16`(brain float) 부동소수점 포맷을 지원한다. 마찬가지로 해당하는 builder flag를 사용하여 활성화할 수 있다.
+
+```c++
+config->setFlag(BuilderFlag::kBF16);
+```
 
 # References
 

@@ -3,8 +3,6 @@
 - [Table of Contents](#table-of-contents)
 - [C++ and Python APIs](#c-and-python-apis)
 - [The Programming Model](#the-programming-model)
-  - [The Build Phase](#the-build-phase)
-  - [The Runtime Phase](#the-runtime-phase)
 - [Plugins](#plugins)
 - [Types and Precision](#types-and-precision)
 - [Quantization](#quantization)
@@ -12,6 +10,7 @@
 - [Dynamic Shapes](#dynamic-shapes)
 - [DLA](#dla)
 - [Updating Weights](#updating-weights)
+- [Streaming Weights](#tensorrt-100-straming-weights)
 - [trtexec Tool](#trtexec-tool)
 - [Polygraphy](#polygraphy)
 - [References](#references)
@@ -85,31 +84,45 @@ Execution phase를 위한 highest-level 인터페이스는 `Runtime`이다.
 
 > 방금 설명에서는 비동기로 추론을 실행하는 것만 언급했다 (`enqueueV3`). TensorRT 런타임에서는 default stream에서 실행하는 `executeV2` 인터페이스도 제공한다.
 
-<br>
-
 # Plugins
 
 TensorRT에서는 기본적으로 지원하지 않는 연산들을 구현하기 위한 `Plugin` 인터페이스를 제공한다. 이렇게 구현된 플러그인들은 TensorRT의 `PluginRegistry`에 등록하여 사용할 수 있다. 예를 들어, ONNX parser로 ONNX 파일을 파싱하여 네트워크를 번역할 때, `PluginRegistry`에서 플러그인을 찾아서 사용할 수 있다.
 
 TensorRT 자체에서 제공하는 몇 가지 플러그인들이 있으며, 이는 [link](https://github.com/NVIDIA/TensorRT/tree/main/plugin)에서 찾아볼 수 있다.
 
-당연히 사용자가 새로운 플러그인을 작성하여 사용할 수 있으며, 이에 대한 내용은 [Extending TensorRT with Custom Layers](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#extending)에서 확인할 수 있다.
+**[TensorRT 10.0]** `cuDNN`와 `cuBLAS`는 더 이상 TensorRT와 함께 제공되지 않기 때문에 별도로 해당 라이브러리를 설치해야 한다. `cudnnContext*` 또는 `cublasContext*`를 얻으려면 해당하는 `TacticSource` 플래그를 `nvinfer1::IBuilderConfig::setTacticSource()`를 사용하여 설정해주어야 한다.
 
-<br>
+당연히 사용자가 새로운 플러그인을 작성하여 사용할 수 있으며, 이에 대한 내용은 [Extending TensorRT with Custom Layers](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#extending)에서 확인할 수 있다.
 
 # Types and Precision
 
-TensorRT는 `FP32`, `FP16`, `INT8`, `INT32`, `UINT8`, `BOOL`의 데이터 타입을 지원한다.
+## Supported Types
+
+TensorRT는 `FP32`, `FP16`, `INT8`, `INT32`, `UINT8`, `BOOL`의 데이터 타입을 지원한다. TensorRT 10.0부터 `BF16`, `FP8`, `INT4`, `INT64` 타입도 지원한다.
 
 - `FP32`, `FP16`
   - Unquantized higher precision types
+- **[TensorRT 10.0]** `BF16`
 - `INT8`
   - Implicit quantization
   - Explicit quantization
+- **[TensorRT 10.0]** `INT4` : low-precision integer type for weight compression
+  - used for weight-only-quantization (requires dequantization before compute is performed).
+  - conversion to and from INT4 type requires an explicit Q/DQ/ layer.
+  - INT4 weight sare expected to be serialized by packing two elements per-byte (refer [Quantized Weights](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#qat-weights)).
+- **[TensorRT 10.0]** `FP8` : low-precision floating-point type
+  - 8-bit floating point type with 1-bit for sign, 4-bits for exponent, 3bits for mantissa (4E3M FP8).
+  - conversion to and from FP8 type requires an explicit Q/DQ layer.
 - `UINT8` : only usable as a network I/O type (UINT8 quantization is not supported)
 - `BOOL` : used with supported layers
 
-TensorRT는 네트워크에서 부동소수점 연산 구현을 위한 CUDA 커널을 선택할 때, 기본적으로 `FP32` 구현을 선택한다. Precision을 선택할 때, 두 가지 레벨에서 제어할 수 있다.
+## [TensorRT 10.0] Strong Typing vs Weak Typing
+
+TensorRT에 네트워크를 제공할 때, strongly type인지 weakly type인지 지정할 수 있고, 기본적으로는 weakly type으로 지정된다.
+
+Strongly typed networks에서 TensorRT의 optimizer는 network input 타입과 operator의 specification에 기반하여 중간 텐서 타입을 정적으로 추론한다. 자세한 내용은 [Strongly Typed Network](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#strongly-typed-networks) 참조.
+
+Weakly typed networks에서 TensorRT의 optimizer는 성능을 높일 수 있는 경우에 다른 precision으로 대체할 수 있다. 이 모드에서 기본적으로 모든 부동소수점 연산은 `FP32`이다. 하지만 다른 수준의 precision을 선택하는 두 가지 방법이 있다.
 
 - Model level에서 precision을 제어하려면, `BuilderFlag` 옵션을 사용하여 TensorRT가 더 빠른 구현을 찾도록 더 낮은 precision을 선택할 수 있도록 할 수 있다 (더 낮은 precision에서 일반적으로 더 빠르다).
   
@@ -118,17 +131,17 @@ TensorRT는 네트워크에서 부동소수점 연산 구현을 위한 CUDA 커�
 
 이에 대한 자세한 내용은 [Reduce Precision](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#reduced-precision)에서 설명하고 있다.
 
-<br>
-
 # Quantization
 
-TensorRT는 8비트 정수로 반올림되는 qunatized floating-point를 지원한다. 이를 통해 산술처리량을 증가시키면서 storage 및 memory bandwidth를 줄일 수 있다. 부동소수점 텐서를 양자화할 때, TensorRT는 해당 텐서의 dynamic range를 알고 있어야 한다. 해당 범위 밖의 값은 clamping 된다.
+[Updated in TensorRT 10.0]
+
+TensorRT는 선형적으로 압축되거나 반올림되는 low precision quantized types (INT8, FP8, INT4)의 quantized floating point를 지원한다. 이를 통해 산술처리량을 증가시키면서 storage 및 memory bandwidth를 줄일 수 있다.
+
+TensorRT는 8비트 정수로 반올림되는 qunatized floating-point를 지원한다. 이를 통해 산술처리량을 증가시키면서 storage requirements 및 memory bandwidth를 줄일 수 있다. 부동소수점 텐서를 양자화할 때, TensorRT는 해당 텐서의 dynamic range를 알고 있어야 한다. 해당 범위 밖의 값은 clamping 된다.
 
 Dynamic range 정보는 대표되는 input data를 기반으로 builder가 계산할 수 있다. 이 과정을 TensorRT에서는 `calibration`이라고 부른다. 또는, 프레임워크에서 quantization-aware training(QAT)를 수행하고 필요한 dynamic range 정보와 함께 모델을 TensorRT로 가져올 수도 있다.
 
-이에 대한 자세한 내용은 [Working with INT8](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#working-with-int8)에서 다룬다.
-
-<br>
+[Working with Quantized Types](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#working-with-int8)에서 조금 더 자세한 내용을 살펴볼 수 있다.
 
 # Tensors and Data Formats
 
@@ -140,8 +153,6 @@ Dynamic range 정보는 대표되는 input data를 기반으로 builder가 계�
 
 이에 대한 자세한 내용은 [I/O Formats](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#reformat-free-network-tensors)에서 확인할 수 있다.
 
-<br>
-
 # Dynamic Shapes
 
 기본적으로 TensorRT는 모델이 정의된 input shapes(batch size, image size, ...)를 기반으로 모델을 최적화한다. 즉, 지정된 크기에 대해 최적화를 수행한다. 그러나 런타임 시에, 즉, 어플리케이션에서 추론할 때, input dimensions를 builder를 통해 조정할 수 있다. 이를 활성화하려면 builder configuration에서 `OptimizationProfile` 인스턴스를 최소 하나 이상 지정해야 하며, `OptimizationProfile`에는 해당 범위 내의 최적화 지점과 함께 각 입력에 대한 최소/최대 shape를 포함한다.
@@ -150,15 +161,11 @@ TensorRT는 [minimum, maximum] 범위 내의 모든 shape에 대해 동작하며
 
 이에 대한 자세한 내용은 [Working with Dynamic Shapes](hhttps://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#work_dynamic_shapes)에서 설명하고 있다.
 
-<br>
-
 # DLA
 
 TensorRT는 NVIDIA의 Deep Learning Accelerator(DLA)를 지원한다. DLA는 NVIDIA SoC에 존재하는 추론 전용 프로세서이다. DLA는 TensorRT의 일부 제한된 레이어들을 지원하며, TensorRT는 네트워크 일부를 DLA에서 실행하고 지원되지 않는 나머지 레이어에서는 GPU에서 실행하도록 할 수 있다. 두 장치에서 모두 실행할 수 있는 레이어는 builder configuration에서 각 레이어마다 하나를 지정할 수 있다.
 
 이에 대한 자세한 내용은 [Working with DLA](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#dla_topic)에서 다루고 있다.
-
-<br>
 
 # Updating Weights
 
@@ -166,7 +173,9 @@ TensorRT는 NVIDIA의 Deep Learning Accelerator(DLA)를 지원한다. DLA는 NVI
 
 이에 대한 자세한 내용은 [Refitting an Engines](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#refitting-engine-c)에서 다루고 있다.
 
-<br>
+# [TensorRT 10.0] Straming Weights
+
+TensorRT는 engine load time에 가중치를 device memory에 로드하는 것이 아닌, 네트워크를 실행할 때 가중치를 host memory에서 device memory로 스트림할 수 있는 기능을 제공한다. 이를 통해 제한된 GPU 크기보다 더 큰 메모리의 가중치를 가진 모델을 실행할 수 있지만, 잠재적으로 latency가 상당히 증가한다. 이 기능은 build time (`BuilderFlag::kWEIGHT_STREAMING`)과 runtime (`ICudaEngine::setWeightStreamingBudget`) 모두에서 가능하다.
 
 # trtexec Tool
 
@@ -177,8 +186,6 @@ samples 디렉토리에는 TensorRT를 사용하지 않으면서 자체 어플�
 - Builder로부터 serialized timing cache를 생성한다.
 
 `trtexec`에 대한 내용은 [trtexec](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#trtexec)에서 자세히 다루고 있다.
-
-<br>
 
 # Polygraphy
 
@@ -193,8 +200,6 @@ Polygraphy는 TensorRT 및 다른 프레임워크에서 딥러닝 모델을 실�
 - Isolate faulty tactics in TensorRT (ex, [CLI](https://github.com/NVIDIA/TensorRT/tree/main/tools/Polygraphy/examples/cli/debug/01_debugging_flaky_trt_tactics))
 
 Polygraphy에 대한 내용은 [Polygraph repository](https://github.com/NVIDIA/TensorRT/tree/main/tools/Polygraphy)에서 살펴볼 수 있다.
-
-<br>
 
 # References
 
