@@ -4,8 +4,6 @@
 - [Setting Dynamic Range](#setting-dynamic-range)
 - [References](#references)
 
-<br>
-
 # Setting Dynamic Range
 
 TensorRT는 *dynamic range* 를 직접 설정하는 API를 제공한다. 이 API는 TensorRT 외부에서 계산된 implicit quantization을 지원하기 위해 지원된다.
@@ -22,8 +20,6 @@ tensor->setDynamicRange(min_float, max_float);
 ```
 
 > [sampleINT8API](https://github.com/NVIDIA/TensorRT/tree/main/samples/sampleINT8API)에서 관련된 API를 사용하는 방법을 잘 보여준다.
-
-<br>
 
 # References
 

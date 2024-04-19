@@ -18,7 +18,7 @@
 
 ## Developer Guide
 
-> v10.0.0 Documentation 기준으로 작성됨
+> v10.0.0 EA Documentation 기준으로 작성됨
 
 - [Introduction](/tensorrt/doc/01_developer_guide/01_introduction.md)
 - [TensorRT's Capabilities](/tensorrt/doc/01_developer_guide/02_tensorrts_capabilities.md)
@@ -29,20 +29,24 @@
   - Refitting an Engine
   - [Algorithm Selection and Reproducible Builds](/tensorrt/doc/01_developer_guide/06-03_algorithm_selection_and_reproducible_builds.md)
   - [Creating a Network Definition from Scratch](/tensorrt/doc/01_developer_guide/06-04_creating_a_network_definition_from_scratch.md)
-  - [Reduced Precision](/tensorrt/doc/01_developer_guide/06-05_reduced_precision.md)
+  - [TensorRT 10.0] [Strongly Typed Networks](/tensorrt/doc/01_developer_guide/06-12_strongly_typed_networks.md)
+  - [Reduced Precision in Weakly Typed Networks](/tensorrt/doc/01_developer_guide/06-05_reduced_precision.md)
+  - [Control of Computational Precision](/tensorrt/doc/01_developer_guide/06-13_control_of_computational_precision.md)
   - [I/O Formats](/tensorrt/doc/01_developer_guide/06-06_io_formats.md)
   - [Explicit Versus Implicit Batch](/tensorrt/doc/01_developer_guide/06-07_explicit_versus_implicit_batch.md)
   - [Sparsity](/tensorrt/doc/01_developer_guide/06-08_sparsity.md)
   - [Empty Tensors](/tensorrt/doc/01_developer_guide/06-09_empty_tensors.md)
   - Reusing Input Buffers
   - [Engine Inspector](/tensorrt/doc/01_developer_guide/06-11_engine_inspector.md)
+  - Optimizer Callbacks
   - Preview Features
-- Working with INT8
+  - Debug Tensors
+- Working with Quantized Types
   - [Introduction to Quantization](/tensorrt/doc/01_developer_guide/07-01_introducing_to_quantization.md)
   - [Setting Dynamic Range](/tensorrt/doc/01_developer_guide/07-02_setting_dynamic_range.md)
   - [Post-Training Quantization Using Calibration](/tensorrt/doc/01_developer_guide/07-03_post_training_quantization_using_calibration.md)
   - [Explicit Quantization](/tensorrt/doc/01_developer_guide/07-04_explicit_quantization.md)
-  - [INT8 Rounding Modes](/tensorrt/doc/01_developer_guide/07-05_int8_rounding_modes.md)
+  - [Quantized Types Rounding Modes](/tensorrt/doc/01_developer_guide/07-05_quantized_types_rounding_modes.md)
 - [Working with Dynamic Shapes](/tensorrt/doc/01_developer_guide/08_working_with_dynamic_shapes.md)
 - [Extending TensorRT with Custom Layers](/tensorrt/doc/01_developer_guide/09_extending_tensorrt_with_custom_layers.md)
 - Working with Loops

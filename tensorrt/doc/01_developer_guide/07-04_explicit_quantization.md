@@ -5,39 +5,38 @@
 - [Quantized Weights](#quantized-weights)
 - [ONNX Support](#onnx-support)
 - [TensorRT Processing of Q/DQ Networks](#tensorrt-processing-of-qdq-networks)
+- [Weight-Only Quantization](#weight-only-quantization)
 - [Q/DQ Layer-Placement Recommendations](#qdq-layer-placement-recommendations)
 - [Q/DQ Limitations](#qdq-limitations)
 - [Q/DQ Interaction with Plugins](#qdq-interaction-with-plugins)
 - [QAT Networks Using TensorFlow](#qat-networks-using-tensorflow)
 - [QAT Networks Using PyTorch](#qat-networks-using-pytorch)
+- [QAT Networks Using TransformerEngine](#qat-networks-using-transformerengine)
 - [References](#references)
-
-<br>
 
 # Explicit Quantization
 
-TensorRT가 네트워크에서 Q/DQ 레이어의 존재를 감지하면, explicit-precision processing logic을 사용하여 엔진을 빌드한다.
+TensorRT가 네트워크에서 Q/DQ 레이어의 존재를 감지하면, explicit-precision processing logic을 사용하여 엔진을 빌드하며, precision-control build flags는 필요로 하지 않는다.
 
-Q/DQ 네트워크는 반드시 INT8-precision builder flag가 활성된 상태에서 빌드되어야 한다.
-```c++
-config->setFlag(BuilderFloag::kINT8);
-```
+Explicit-quantization에서 양자화된 데이터의 타입에 대한 변경이 명시적이므로 `INT8`과 `FP8`을 타입 제약으로 사용하면 안된다.
 
-Explicit-quantization에서 INT8에 대한 표현의 변경은 명시적이므로 INT8은 type constraint로 사용되어서는 안된다.
-
-<br>
+> [Strongly Typed Networks](/tensorrt/doc/01_developer_guide/06-12_strongly_typed_networks.md)에서 builder flags는 필요로 하지도 않고 허용되지도 않는다.
 
 # Quantized Weights
 
-Q/DQ 모델의 weights는 반드시 FP32 타입을 사용하도록 지정해야 한다. Weights는 해당 weights에서 동작하는 `IQuantizeLayer`의 scale을 사용하여 TensorRT에 의해서 양자화된다. 양자화된 weights는 엔진 파일(plan)에 저장된다. Prequantized weights를 사용할 수도 있는데, 반드시 FP32 타입을 사용하도록 지정해야 한다. Q 노드의 scale은 반드시 `1.0F`로 설정되어야 하고, DQ 노드는 실제 scale 값이어야 한다.
+Q/DQ 모델의 weights는 high precision 타입(`FP32`, `FP16`, or `BF16`)으로 지정될 수도 있고, low precision quantized 타입(`INT8`, `FP8`, `INT4`)으로 지정될 수도 있다. TensorRT가 엔진을 빌드할 때, high-precision weights는 `IQuantizeLayer`의 scale을 사용하여 양자화되며 quantized(low precision) weights는 엔진 플랜 파일에 저장된다. Pre-quantized weights, 즉, low-precision weights를 사용할 때는 weights와 이 weights를 사용하는 linear operator 사이에 `IDequantizeLayer`가 필요하다.
 
-<br>
+`INT4` quantized weights는 바이트 당 두 개의 요소가 저장된다. 첫 번째 요소는 4 least-significant bits에 저장되고, 두 번째 요소는 4 most-significant bits에 저장된다.
 
 # ONNX Support
 
-파이토치 또는 텐서플로우에서 Quantization Aware Training (QAT)를 사용하여 학습된 모델을 ONNX로 추출할 때, 프레임워크의 그래프에서 각 fake-quantization 연산은 [QuantizeLinear](https://github.com/onnx/onnx/blob/main/docs/Operators.md#QuantizeLinear)와 [DequantizeLinear](https://github.com/onnx/onnx/blob/master/docs/Operators.md#dequantizelinear)라는 ONNX 연산들의 쌍으로 추출된다.
+파이토치 또는 텐서플로우에서 Quantization Aware Training (QAT)를 사용하여 학습된 모델을 ONNX로 추출할 때, 프레임워크의 그래프에서 각 fake-quantization 연산은 [QuantizeLinear](https://github.com/onnx/onnx/blob/main/docs/Operators.md#QuantizeLinear)와 [DequantizeLinear](https://github.com/onnx/onnx/blob/master/docs/Operators.md#dequantizelinear)라는 ONNX 연산들의 쌍으로 추출된다. TensorRT가 ONNX 모델을 파싱하여 읽을 때, ONNX의 `QuantizeLinear` 연산은 `IQuantizeLayer` 인스턴스로 임포트되고, `DequantizeLinear` dustksdms `IDequantizeLayer` 인스턴스로 임포트된다.
 
-TensorRT가 ONNX 모델을 파싱하여 읽을 때, ONNX의 `QuantizeLinear` 연산은 `IQuantizeLayer` 인스턴스로 임포트되고, `DequantizeLinear` dustksdms `IDequantizeLayer` 인스턴스로 임포트된다. opset 10을 사용하는 ONNX에서 QuantizeLinear/DequantizeLinear를 지원하기 시작했으며, quantization-axis 속성(required for per-channel quantization)은 opset 13에서 추가되었다. Pytorch 1.8부터 opset 13을 사용하는 ONNX로 모델을 추출할 수 있다.
+ONNX opset 10에서 `QuantizeLinear`/`DequantizeLinear`를 지원하기 시작했으며, quantization-axis 속성은 opset 13(PyTorch 1.8)에서 도입되었다.
+
+ONNX opset 19에서는 4개의 FP8 포맷이 추가되었으며, TensorRT가 지원하는 `E4M3FN`은 ONNX의 `float8e4m3fn`에 해당한다. PyTorch 2.1에 opest 19가 적용되었다. PyTorch 2.1 이전에는 FP8 타입이 지원되지 않았기 때문에 `TransformerEngine`에서는 FP quantization function을 custom ONNX Q/DQ operator로 export한다 ("trt" domain - `TFT_FP8_QuantizeLinear`, `TRT_FP8_DequantizeLinear`). TensorRT는 표준 opset 19의 Q/DQ operators도 파싱할 수 있지만, opset 19는 TensorRT에서 현재 완전히 지원되지 않는다.
+
+ONNX opset 21에서는 INT4 data type과 block quantization에 대한 지원이 추가되었다.
 
 <br>
 
@@ -53,17 +52,15 @@ TensorRT는 NT8 텐서 또는 양자화된 연산자를 사용하여 이미 양�
 - [QLinearConv](https://github.com/onnx/onnx/blob/master/docs/Operators.md#QLinearConv) / [QLinearMatmul](https://github.com/onnx/onnx/blob/master/docs/Operators.md#QLinearMatMul)
 - [ConvInteger](https://github.com/onnx/onnx/blob/master/docs/Operators.md#ConvInteger) / [MatmulInteger](https://github.com/onnx/onnx/blob/master/docs/Operators.md#MatMulInteger)
 
-<br>
-
 # TensorRT Processing of Q/DQ Networks
 
-TensorRT가 Q/DQ-mode에서 네트워크를 최적화할 때, 최적화 프로세스는 네트워크의 arithmetic correctness를 변경하지 않는 최적화로 제한된다. 부동소수점 연산의 순서로 인해 다른 결과가 나올 수 있으므로 bit-level의 정확도는 거의 불가능하다 (ex, a * s + b * s를 (a+b) *  a로 rewrite하는 것은 유효한 최적화이다). 이러한 차이를 허용하는 것은 일반적으로 backend optimization에서는 기본(fundamental)이며, INT8 연산을 사용하기 위해서 Q/DQ 레이어가 있는 그래프를 변환하는 데에도 이 내용이 적용된다.
+TensorRT가 Q/DQ-mode에서 네트워크를 최적화할 때, 최적화 프로세스는 네트워크의 arithmetic correctness를 변경하지 않는 최적화로 제한된다. 부동소수점 연산의 순서로 인해 다른 결과가 나올 수 있으므로 bit-level의 정확도는 거의 불가능하다 (ex, a * s + b * s를 (a+b) *  a로 rewrite하는 것은 유효한 최적화이다). 이러한 차이를 허용하는 것은 일반적으로 backend optimization에서는 기본(fundamental)이며, quantized operator을 사용하기 위해서 Q/DQ 레이어가 있는 그래프를 변환하는 데에도 이 내용이 적용된다.
 
-Q/DQ 레이어는 네트워크의 compute 및 data precision을 제어한다. `IQuantizeLayer` 인스턴스는 quantization을 사용하여 FP32 텐서를 INT8 텐서로 변환하고, `IDequantizeLayer` 인스턴스는 dequantization을 통해 INT8 텐서를 PF32 텐서로 변환한다. TensorRT는 quantizable-layers의 각 입력에서 Q/DQ 레이어 쌍을 기대한다. Quantizable-layers는 `IQuantizeLayer` 및 `IDequantizeLayer` 인스턴스와 결합(fusion)하여 양자화된 레이어로 변환할 수 있는 deep-learning layers이다. TensorRT가 이러한 fusion을 수행할 때, quantizable layers를 실제로 INT8 data에 대해 연산하는 quantized layers로 바꾼다.
+Q/DQ 레이어는 네트워크의 compute 및 data precision을 제어한다. `IQuantizeLayer` 인스턴스는 quantization을 사용하여 high-precision floating-point tensor를 quantized tensor로 변환하고, `IDequantizeLayer` 인스턴스는 dequantization을 통해 quantized tensor를 high-precision floating-point tensor로 변환한다. TensorRT는 quantizable-layers의 각 입력에서 Q/DQ 레이어 쌍을 기대한다. Quantizable-layers는 `IQuantizeLayer` 및 `IDequantizeLayer` 인스턴스와 결합(fusion)하여 양자화된 레이어로 변환할 수 있는 deep-learning layers이다. TensorRT가 이러한 fusion을 수행할 때, quantizable layers를 실제로 quantized data에 대해 연산하는 quantized layers로 바꾼다.
 
 <br>
 
-아래에서 사용되는 다이어그램에서 녹색은 INT8 precision을 나타내고, 파란색은 floating-point precision을 나타낸다. 화살표는 network activation tensors를 나타내고 사각형 박스는 network layers를 나타낸다.
+아래에서 사용되는 다이어그램에서 녹색은 low precision(quantized)을 나타내고, 파란색은 high precision을 나타낸다. 화살표는 network activation tensors를 나타내고 사각 박스는 network layers를 나타낸다.
 
 아래 그림은 quantizable `AveragePool` 레이어(in blue)가 DQ 레이어 및 Q 레이어와 fusion되는 것을 보여준다. 3개의 레이어는 quantized `AveragePool` 레이어(in green)으로 대체된다.
 
@@ -80,21 +77,23 @@ Q/DQ 레이어는 네트워크의 compute 및 data precision을 제어한다. `I
 
 > 문서에서 `MaxPool` commutation에 대해 자세하게 설명한다. 
 
-<br>
-
 Quantizable-layers와 commuting-layers이 처리되는 방식에는 차이점이 있다. 두 타입의 레이어는 모두 INT8로 연산할 수 있지만, quantizable-layers도 DQ input layers 및 Q output layer와 fusion된다. 예를 들어, `AveragePooling` 레이어(quantizable)는 Q 또는 DQ와 commute하지 않기 때문에 위의 첫 번째 다이어그램에서와 같이 Q/DQ fusion을 사용하여 양자화된다. 이는 `MaxPool`(commuting)이 양자화되는 방식가 대조된다.
 
-<br>
+# Weight-Only Quantization
+
+Weight-only quantization (WoQ)는 GEMM operator의 성능이 memory bandwidth에 의해 제한되거나 GPU 메모리가 희소할 때 유용한 양자화 기법이다. WoQ에서 GEMM weights는 INT4 정밀도로 양자화되는 반면, GEMM의 input 및 compute operation은 여전히 high-precision이다. TensorRT의 WoQ 커널은 4-bit weights를 메모리로부터 읽고, high-precision에서 dot product를 수행하기 전에 dequantization만 수행한다.
+
+<img src="https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/graphics/weight-only-qat.png" height=400px style="display: block; margin: 0 auto; background-color:white"/>
 
 # Q/DQ Layer-Placement Recommendations
 
 네트워크에서 Q/DQ 레이어의 배치는 성능과 정확도에 영향을 미친다. 공격적인 양자화는 양자화로 인한 에러에 의해서 모델의 정확도가 저하될 수 있다. 그러나 양자화를 통해 latency가 감소될 수 있다. 아래에 나열된 내용은 네트워크에서 Q/DQ 레이어 배치에 대한 몇 가지 권장 사항이다.
 
+> **Note**: 오래된 gpu device에서는 모든 레이어에 대해 low precision kernel implementation이 없을 수 있으며, 이 경우에 엔진을 빌드하는 동안 `could not find any implementation` 에러가 발생한다. 이를 해결하려면 Q/DQ 노드를 제거해야 한다.
+
 - **Quantize all inputs of weighted-operations** (Convolution, Transposed Convolution and GEMM).
 
 Weights와 activations에 대한 양자화는 bandwidth 요구사항을 감소시키고, INT8 연산을 사용하여 bandwidth-limited layer와 compute-limited layer를 가속화할 수 있다.
-
-> SM 7.5 이하의 device에서는 모든 레이어에서 INT8 구현을 제공하지 않는다. 이 경우, 엔진을 빌드할 때, `could not find any implementation` 에러가 발생할 수 있다. 이를 해결하려면 해당 레이어를 양자화하는 Q/DQ 레이어를 제거하면 된다.
 
 아래 그림은 TensorRT가 convolutional layer를 fusion하는 두 가지 예제를 보여준다. 왼쪽은 input만 양자화되고, 오른쪽은 input과 output 모두 양자화된다.
 
@@ -156,8 +155,6 @@ TensorRT는 ResNet과 EfficientNet과 같이 skip connections가 있는 모델�
 
 FP16을 활성화하여 엔진의 latency를 더욱 최적화할 수 있다. TensorRT는 가능하다면 FP32 대신 FP16을 사용하려고 시도한다 (모든 레이어 타입에 대해서 지원되지는 않음).
 
-<br>
-
 # Q/DQ Limitations
 
 TensorRT가 수행하는 몇 가지 Q/DQ graph-rewrite 최적화는 2개 이상의 Q/DQ 레이어 간의 quantization scale 값을 비교하고, 만약 비교된 quantization scale이 동일한 경우에만 graph-rewrite를 수행한다. Refittable engine이 다시 fitting될 때, Q/DQ 노드의 scale에 새로운 값이 할당될 수 있다. Q/DQ engines의 refitting 연산 중에 TensorRT는 scale-dependent한 최적화에 참여한 Q/DQ 레이어에 rewrite optimization을 깨는 새로운 값이 할당되었는지 확인하고, true라면 예외를 발생시킨다.
@@ -165,8 +162,6 @@ TensorRT가 수행하는 몇 가지 Q/DQ graph-rewrite 최적화는 2개 이상�
 아래 그림은 Q1과 Q2의 스케일이 같을 때를 보여준다. 만약 스케일 값이 같다면, 이들은 backward로 전파할 수 있다. 만약 엔진에 `Q1 != Q2`가 되도록 Q1 및 Q2에 새로운 값으로 refitting되면 예외가 발생하여 refitting process가 중단된다.
 
 <img src="https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/graphics/q-dq-limitations.PNG" height=500px style="display: block; margin: 0 auto; background-color:white"/>
-
-<br>
 
 # Q/DQ Interaction with Plugins
 
@@ -194,19 +189,17 @@ TensorRT가 이 그래프를 최적화할 때, 아래와 같이 레이어를 퓨
 
 `DQ_i`를 수동으로 fusion할 때, input quantization scale을 취하고 이를 플러그인에 전달한다. 따라서, 필요하다면 input을 dequantization하는 방법을 플러그인이 알 수 있다. 동일한 방법이 `Q_o`에도 적용된다.
 
-<br>
-
 # QAT Networks Using TensorFlow
 
 TensorFlow 2 Keras 모델에서 QAT를 수행할 수 있는 오픈소스 [TensorFlow-Quantization Toolkit](https://github.com/NVIDIA/TensorRT/tree/main/tools/tensorflow-quantization)을 제공한다. 자세한 내용은 [TensorFlow-Quantization Toolkit User Guide](https://docs.nvidia.com/deeplearning/tensorrt/tensorflow-quantization-toolkit/docs/index.html)을 참조하면 된다.
-
-<br>
 
 # QAT Networks Using PyTorch
 
 PyTorch 1.8부터 per channel scale을 지원하는 ONNX `QuantizeLinear`/`DequantizeLinear`를 지원한다. INT8 calibration, QAT, fine-tuning을 [pyTorch-quantization](https://github.com/NVIDIA/TensorRT/tree/main/tools/pytorch-quantization)를 사용하여 수행할 수 있고, ONNX로 추출할 수 있다. 자세한 내용은 [PyTorch-Quantization Toolkit User Guide](https://docs.nvidia.com/deeplearning/tensorrt/pytorch-quantization-toolkit/docs/index.html)에서 살펴볼 수 있다.
 
-<br>
+# QAT Networks Using TransformerEngine
+
+트랜스포머 모델의 학습, 추론, 추출을 가속화하는 오픈 소스 라이브러리 [TransformerEngine](https://github.com/NVIDIA/TransformerEngine)을 제공한다. 이 라이브러리는 트랜스포머 레이어를 구축하기 위한 API와 FP8 support에 필요한 structs 및 kernels를 포함하는 C++의 framework agnostic 라이브러리가 포함되어 있다. 여기서 제공하는 모듈은 내부적으로 FP8 training에 필요한 scaling factors 및 다른 값들을 유지한다. 이를 사용하여 mixed precision model을 학습하고, ONNX로 추출한 다음, TensorRT를 사용하여 이 모델에 대한 추론을 실행할 수 있다.
 
 # References
 
@@ -217,3 +210,4 @@ PyTorch 1.8부터 per channel scale을 지원하는 ONNX `QuantizeLinear`/`Dequa
 - [TensorFlow-Quantization Toolkit User Guide](https://docs.nvidia.com/deeplearning/tensorrt/tensorflow-quantization-toolkit/docs/index.html)
 - [PyTorch-Quantization (github)](https://github.com/NVIDIA/TensorRT/tree/main/tools/pytorch-quantization)
 - [PyTorch-Quantization Toolkit User Guide](https://docs.nvidia.com/deeplearning/tensorrt/pytorch-quantization-toolkit/docs/index.html)
+- [TransformerEngine](https://github.com/NVIDIA/TransformerEngine)

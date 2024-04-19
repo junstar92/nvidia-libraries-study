@@ -7,9 +7,9 @@
 - [Quantization Noise Reduction](#quantization-noise-reduction)
 - [References](#references)
 
-<br>
-
 # Post-Training Quantization Using Calibration
+
+> [TensorRT 10.0] **INT8 quantization만 가능하다.**
 
 Post-Training Quantization (PTQ)에서 TensorRT는 네트워크의 각 텐서에 대한 scale 값을 계산한다. 이러한 프로세스를 _calibration_ 이라고 부르며, calibration에는 각 activation 텐서에 대한 통계(statistics) 정보를 수집하기 위해서 네트워크에 대한 대표 입력 데이터(representative input data)가 필요하다. 즉, TensorRT는 calibration 프로세스를 위해 네트워크를 실행하는데 실제 입력 데이터가 필요하다는 것이다.
 
