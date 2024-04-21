@@ -7,17 +7,12 @@
 - [Dimension Constraint using IAssertionLayer](#dimension-constraint-using-iassertionlayer)
 - [Optimization Profiles](#optimization-profiles)
 - [Dynamically Shaped Output](#dynamically-shaped-output)
-  - [Looking up Binding Indices for Multiple Optimization Profiles](#looking-up-binding-indices-for-multiple-optimization-profiles)
-  - [Binding For Multiple Optimization Profiles](#binding-for-multiple-optimization-profiles)
 - [Layer Extensions For Dynamic Shapes](#layer-extensions-for-dynamic-shapes)
 - [Restrictions For Dynamic Shapes](#restrictions-for-dynamic-shapes)
 - [Execution Tensors Versus Shape Tensors](#execution-tensors-versus-shape-tensors)
-  - [Formal Inference Rules](#formal-inference-rules)
 - [Shape Tensor I/O (Advanced)](#shape-tensor-io-advanced)
 - [INT8 Calibration with Dynamic Shapes](#int8-calibration-with-dynamic-shapes)
 - [References](#references)
-
-<br>
 
 # Working with Dynamic Shapes
 
@@ -47,8 +42,6 @@ Preview feature (`PreviewFeature::kFASTER_DYNAMIC_SHAPES_0805`)가 활성화될 
 - decrease device memory usage and engine size.
 
 > `kFASTER_DYNAMIC_SHAPES_0805`를 활성화하여 혜택을 볼 가능성이 가장 높은 모델은 Transformer 기반 모델 및 dynamic control flows를 포함하는 모델이라고 문서에서 언급하고 있다.
-
-<br>
 
 # Specifying Runtime Dimensions
 
@@ -111,8 +104,6 @@ tensor->getDimensionName(2);
 
 > ONNX 파일을 통해 input network를 임포트하면, ONNX parser가 차원의 이름을 ONNX file에서의 이름으로 자동으로 설정한다. 따라서, 두 개의 dynamic dimensions가 런타임에서 동일하다면 ONNX file을 export할 때, 이러한 차원 이름을 동일하게 지정하는 것이 좋다.
 
-<br>
-
 # Dimension Constraint using IAssertionLayer
 
 경우에 따라 두 개의 dynamic dimensions가 동일하지 않지만, 런타임에 동일하다고 보장된다. TensorRT에게 두 차원이 동일하다는 것을 알려주면 더 효율적인 엔진을 구축하는데 도움이 될 수 있다. TensorRT에서 이러한 제약을 전달하는 방법에는 두 가지가 있다.
@@ -139,8 +130,6 @@ n.addAssertion(*areEqual, "oops");
 ```
 
 만약 런타임에서 해당 assertion을 위반하면 TensorRT는 에러를 던진다.
-
-<br>
 
 # Optimization Profiles
 
@@ -173,8 +162,6 @@ context->setOptimizationProfileAsync(0, stream);
 `setOptimizationProfileAsync()`를 호출하여 profiles 간에 전환할 수 있다. 이 호출은 `enqueue()`, `enqueueV2()`, `enqueueV3()` 작업이 현재 context에서 완료된 후 호출해야 한다. 여러 개의 execution context가 동시에 실행되는 경우, 다른 execution context에서 해제된(사용되지 않는) profile로 전환할 수 있다.
 
 `setOptimizationProfile()` API는 deprecated 되었다. 이를 사용하여 optimization profile을 전환하면 이어지는 `enqueue()`, `enqueueV2()` 작업에서 GPU 메모리 복사가 발생할 수 있다. 이러한 호출을 방지하려면 `setOptimizationProfileAsync()` API를 사용해야 한다.
-
-<br>
 
 # Dynamically Shaped Output
 
@@ -321,8 +308,6 @@ public:
 
 첫 번째 profile에 대한 바인딩을 의도했지만 다른 profile이 지정된 경우를 위한 "auto-correct" 인터페이스가 있다. 이 경우, TensorRT는 경고를 출력하고 올바른 바인딩 인덱스를 선택한다.
 
-<br>
-
 # Layer Extensions For Dynamic Shapes
 
 일부 레이어에는 dynamic shape 정보를 지정할 수 있는 선택적 입력을 가진다. `IShapeLayer`는 런타임 시, 텐서의 shape에 액세스하는데 사용될 수 있다.
@@ -347,8 +332,6 @@ reshape->setInput(1, network->addShape(X)->getOutput(0));
 - `IIdentityLayer`
 - `IReduceLayer`
 
-<br>
-
 # Restrictions For Dynamic Shapes
 
 레이어의 weights는 고정된 크기를 갖기 때문에 레이어에는 다음의 제약이 있다.
@@ -357,8 +340,6 @@ reshape->setInput(1, network->addShape(X)->getOutput(0));
 - `IFullyConnectedLayer`의 마지막 3개의 차원은 build-time constant 이어야 한다.
 - `Int8`에서 channel 차원은 build-time constant 이어야 한다.
 - 추가적인 shape inputs를 받는 레이어(`IResizeLayer`, `IShuffleLayer`, `ISliceLayer`)에서 shape inputs은 optimization profile의 minimum/maximum 차원과 호환되어야 한다. 그렇지 않으면 빌드 에러 또는 런타임 에러가 발생할 수 있다.
-
-<br>
 
 # Execution Tensors Versus Shape Tensors
 
@@ -449,8 +430,6 @@ TensorRT의 추론은 `ITensor::isShapeTensor()`와 `ITensor::isExecutionTensor(
 
 예를 들어, 부분적으로 빌드된 네트쿼크가 두 개의 텐서 T1과 T2를 더해 T3를 생성하고, 아직 shape 텐서로 필요한 것이 없는 경우에 `isShapeTensor()`는 3개의 텐서에 대해 모두 `false`를 반환한다. 만약 `IShuffleLayer`의 두 번째 입력으로 T3을 사용하면, `IShuffleLayer`의 두 번째 입력은 shape 텐서이어야 하고 `IElementWiseLayer`의 출력 텐서의 shape라면 해당 입력도 shape 텐서가 되어야 하기 때문에 3개의 텐서 모두 shape 텐서가 된다.
 
-<br>
-
 # Shape Tensor I/O (Advanced)
 
 때때로 shape 텐서를 네트워크 I/O로 사용할 필요가 있다. 예를 들어, `IShuffleLayer`로만 구성된 레이어를 생각해보자. TensorRT는 해당 레이어의 두 번째 입력이 shape 텐서라고 추론한다. `ITensor::isShapeTensor()`는 `true`를 반환한다. 이는 input shape 텐서이므로 TensorRT에는 야래의 두 가지가 필요하다.
@@ -470,8 +449,6 @@ Execution 텐서인지 shape 텐서인지에 대한 추론은 궁극적인 사�
 
 런타임에서 텐서가 I/O shape 텐서인지 확인하려면 `ICudnEngine::isShapeInferenceIO()` 메소드를 사용하면 된다.
 
-<br>
-
 # INT8 Calibration with Dynamic Shapes
 
 Dynamic shape를 갖는 네트워크에 대해 INT8 calibration을 실행하려면, calibration optimization profile이 반드시 설정되어야 한다. Calibration은 profile의 kOPT 값을 사용하여 수행된다. Calibraiton input data sizee는 반드시 이 profile과 일치해야 한다.
@@ -484,8 +461,6 @@ config->setCalibrationProfile(profile);
 Calibration profile은 유효하거나 `nullptr`이어야 한다. `kMIN`과 `kMAX` 값은 `kOPT`로 덮어써진다. 현재 calibration profile을 체크하려면 `IBuilderConfig::getCalibrationProfile`을 사용하면 된다. 이 메소드는 현재 calibration profile의 포인터를 반환하거나 profile이 unset되었다면 `nullptr`을 반환한다. Dynamic shape 네트워크에 대해 calibration을 수행할 때, Calibrator의 `getBatchSize()` 메소드는 반드시 `1`을 반환해야 한다.
 
 > 만약 calibration optimization profile이 설정되지 않았다면, 첫 번째 네트워크 optimization profile이 calibration optimization profile로 사용된다.
-
-<br>
 
 # References
 
