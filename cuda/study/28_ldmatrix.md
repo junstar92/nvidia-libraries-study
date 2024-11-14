@@ -3,6 +3,7 @@
 - [ldmatrix](#ldmatrix)
 - [Instruction Details](#instruction-details)
 - [Examples](#examples)
+- [References](#references)
 
 # ldmatrix
 
@@ -337,3 +338,7 @@ Result Matrix:
 112.0 113.0 120.0 121.0 240.0 241.0 248.0 249.0 114.0 115.0 122.0 123.0 242.0 243.0 250.0 251.0 
 116.0 117.0 124.0 125.0 244.0 245.0 252.0 253.0 118.0 119.0 126.0 127.0 246.0 247.0 254.0 255.0
 ```
+
+# References
+
+- [Warp-level matrix load instruction: ldmatrix](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#warp-level-matrix-load-instruction-ldmatrix)

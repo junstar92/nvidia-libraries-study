@@ -143,3 +143,4 @@
 
 - PTX (Parllel Thread eXcution)
   - [Warp-level matrix load instruction (ldmatrix)](/cuda/study/28_ldmatrix.md)
+  - [Warp-level matrix multiply-accumulation (mma.m16n8k16)](/cuda/study/29_mma_m16n8k16_fp16.md)
